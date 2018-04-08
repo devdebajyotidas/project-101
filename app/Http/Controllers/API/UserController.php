@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Account;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,55 +18,101 @@ class UserController extends Controller
     {
         $response = [];
 
+        if(!isset($request->password) || is_null($request->password)){
+            $response['success'] = false;
+            $response['user'] = null;
+            $response['error'] = 'Invalid password';
+            return response()->json($response,Response::HTTP_OK);
+        }
+
+        if(!isset($request->email) || is_null($request->email)){
+            $response['success'] = false;
+            $response['user'] = null;
+            $response['error'] = 'Invalid email address';
+            return response()->json($response,Response::HTTP_OK);
+        }
+
         if($request->get('password') && Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], true))
         {
             $user = Auth::user();
-            $user->fcm_token = $request->get('fcm_token');
+            $user->fcm_token = isset($request->fcm_token) ? $request->get('fcm_token') : '';
             $user->save();
 
-            $response['success'] = true;
-            $response['account'] = $user->account->load('user', 'department.organization');
-            $response['error'] = '';
+            $account=User::with('account')->where('account_id',$user->account_id)->first();
 
+            $response['success'] = true;
+            $response['user'] = $account;
+            $response['error'] = '';
+            return response()->json($response,Response::HTTP_OK);
         }
         else
         {
             $response['success'] = false;
-            $response['account'] = null;
+            $response['user'] = null;
             $response['error'] = 'Invalid Email or Password!';
+            return response()->json($response,Response::HTTP_OK);
         }
-
-        return $response;
-
-
     }
 
     /*Register*/
 
-    public function register(Request $request)
-    {
-        try{
-            // Validate the request
-            $validator =  Validator::make($request->all(),User::$rules['create']);
+    function register(Request $request){
+        $response = [];
 
-            // Check if validation passes
-            if($validator->passes()){
+        DB::beginTransaction();
 
-                // Creating a new User
-                $user = User::create($request->all());
+        $data['user']['password_confirmation']=$data['user']['password']=$request->password;
+        $data['user']['verification_token'] = md5(microtime());
+        $data['user']['mobile']=$request->mobile;
+        $data['user']['email']=$request->email;
+        $data['user']['name']=$request->name;
 
-                // Return User object in response with status code 201
-                $response = response()->json($user,Response::HTTP_CREATED);
+        $data['account']['aadhaar']=isset($request->aadhaar) ? $request->aadhaar : '';
+
+        $exist=User::withTrashed()->where('email',$data['user']['email'])->orWhere('mobile',$data['user']['mobile'])->exists();
+        if($exist){
+            $response['success'] = false;
+            $response['account'] = null;
+            $response['error'] = 'User Already exists';
+            return response()->json($response,Response::HTTP_OK);
+        }
+
+        try {
+
+            $userValidator = Validator::make($data['user'], User::$rules['create']);
+
+            if ($userValidator->passes())
+            {
+                $account = Account::create($data['account']);
+                $user = User::make($data['user']);
+
+                if($account->user()->save($user)){
+                    DB::commit();
+                    $response['success'] = true;
+                    $response['account'] = $account->id;
+                    $response['error'] = false;
+                    return response()->json($response,Response::HTTP_CREATED);
+                }else{
+                    DB::rollBack();
+                    $response['success'] = false;
+                    $response['account'] = null;
+                    $response['error'] = 'Unable to create account';
+                    return response()->json($response,Response::HTTP_OK);
+                }
+
             }else{
-                // Return errors in response with status code 400
-                $response = response()->json(['errors'=>$validator->errors()],Response::HTTP_BAD_REQUEST);
+                $response['success'] = false;
+                $response['account'] = null;
+                $response['error'] = 'Invalid Data';
+                return response()->json($response,Response::HTTP_BAD_REQUEST);
             }
-            // Return the response
-            return $response;
 
-        }catch (\Exception $e){
-            // Catch any exception that might occur on server and set response with status code 500
-            return response()->json(['errors'=>$e->getMessage()],Response::HTTP_INTERNAL_SERVER_ERROR);
+        }catch(\Exception $exception){
+
+            $response['success'] = false;
+            $response['account'] = null;
+            $response['error'] = $exception->getMessage();
+            return response()->json($response,Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -72,19 +120,6 @@ class UserController extends Controller
 
     public function logout($id)
     {
-        try
-        {
-            // Check of the specific user, otherwise throw exception
-            $user = User::findorFail($id);
 
-            // Delete the user (Soft Delete)
-            $user->delete();
-
-            return response()->json($user->deleted_at,Response::HTTP_OK);
-        }
-        catch(ModelNotFoundException $e)
-        {
-            return response()->json(['errors' => 'Requested resource could not be found'],Response::HTTP_NOT_FOUND);
-        }
     }
 }

@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
+use Illuminate\Support\Facades\Auth;
 
-class User extends Authenticatable
+class User extends Authenticatable implements AuditableContract
 {
     use Notifiable;
+    use SoftDeletes;
+    use Auditable;
 
     /**
      * The attributes that are mass assignable.
@@ -17,6 +23,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'mobile',
         'password',
         'account_id',
         'account_type',
@@ -54,5 +61,16 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = bcrypt($value);
+    }
+
+    public function account()
+    {
+//        return $this->morphTo('account')->withTrashed();
+        return $this->morphTo('account');
+    }
+
+    public static function resolveId()
+    {
+        return Auth::check() ? Auth::user()->getAuthIdentifier() : null;
     }
 }

@@ -22,13 +22,13 @@ Route::group(['namespace' => 'API'], function () {
     /*Test Endpoints*/
 
     Route::get('ping', 'TestController@ping');
+    Route::post('postapi', 'TestController@post_test');
 
     /*Accounts*/
 
     Route::post('accounts/login', 'UserController@Login');
     Route::post('accounts/register', 'UserController@Register');
-    Route::delete('accounts/{id}', 'UserController@Logout');
-    Route::put('accounts/{id}', 'UserController@PasswordReset');
+    Route::put('accounts/{id}', 'UserController@ResetPassword');
 
     /**/
 

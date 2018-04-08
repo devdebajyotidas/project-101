@@ -3,30 +3,21 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable;
+use OwenIt\Auditing\Contracts\Auditable as AuditableContract;
 
-class Account extends Model
+class Account extends Model implements AuditableContract
 {
     use Auditable;
-    use SoftDeletes;
+
+    public $timestamps = false;
 
     protected $fillable=[
-        'name',
-        'email',
-        'phone',
         'aadhaar',
-        'photo',
-        'cover_photo',
-        'location'
     ];
 
-    public static $rules = [
-        'create' => [
-            'phone' => 'required',
-        ],
-        'update' => [
-
-        ]
-    ];
+    public function user()
+    {
+        return $this->morphOne('App\Models\User','account');
+    }
 }
