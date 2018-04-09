@@ -20,14 +20,14 @@ class UserController extends Controller
 
         if(!isset($request->password) || is_null($request->password)){
             $response['success'] = false;
-            $response['user'] = null;
+            $response['data'] = null;
             $response['error'] = 'Invalid password';
             return response()->json($response,Response::HTTP_OK);
         }
 
         if(!isset($request->email) || is_null($request->email)){
             $response['success'] = false;
-            $response['user'] = null;
+            $response['data'] = null;
             $response['error'] = 'Invalid email address';
             return response()->json($response,Response::HTTP_OK);
         }
@@ -46,20 +46,20 @@ class UserController extends Controller
                 $account=User::with('account')->where('account_id',$user->account_id)->first();
 
                 $response['success'] = true;
-                $response['user'] = $account;
+                $response['data'] = $account;
                 $response['error'] = '';
                 return response()->json($response,Response::HTTP_OK);
             }
             else
             {
                 $response['success'] = false;
-                $response['user'] = null;
+                $response['data'] = null;
                 $response['error'] = 'Invalid Email or Password!';
                 return response()->json($response,Response::HTTP_OK);
             }
         }catch (\Exception $exception){
             $response['success'] = false;
-            $response['user'] = null;
+            $response['data'] = null;
             $response['error'] = $exception->getMessage();
             return response()->json($response,Response::HTTP_BAD_REQUEST);
         }
@@ -82,7 +82,7 @@ class UserController extends Controller
         $exist=User::withTrashed()->where('email',$data['user']['email'])->orWhere('mobile',$data['user']['mobile'])->exists();
         if($exist){
             $response['success'] = false;
-            $response['account'] = null;
+            $response['data'] = null;
             $response['error'] = 'User Already exists';
             return response()->json($response,Response::HTTP_OK);
         }
@@ -99,20 +99,20 @@ class UserController extends Controller
                 if($account->user()->save($user)){
                     DB::commit();
                     $response['success'] = true;
-                    $response['account'] = $account->id;
+                    $response['data'] = $account->id;
                     $response['error'] = false;
                     return response()->json($response,Response::HTTP_CREATED);
                 }else{
                     DB::rollBack();
                     $response['success'] = false;
-                    $response['account'] = null;
+                    $response['data'] = null;
                     $response['error'] = 'Unable to create account';
                     return response()->json($response,Response::HTTP_OK);
                 }
 
             }else{
                 $response['success'] = false;
-                $response['account'] = null;
+                $response['data'] = null;
                 $response['error'] = 'Invalid Data';
                 return response()->json($response,Response::HTTP_BAD_REQUEST);
             }
@@ -120,7 +120,7 @@ class UserController extends Controller
         }catch(\Exception $exception){
 
             $response['success'] = false;
-            $response['account'] = null;
+            $response['data'] = null;
             $response['error'] = $exception->getMessage();
             return response()->json($response,Response::HTTP_INTERNAL_SERVER_ERROR);
         }
