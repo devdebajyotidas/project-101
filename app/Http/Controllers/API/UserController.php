@@ -78,6 +78,9 @@ class UserController extends Controller
         $data['user']['name']=$request->name;
 
         $data['account']['aadhaar']=isset($request->aadhaar) ? $request->aadhaar : '';
+        $data['account']['location']=isset($request->location) ? $request->location : '';
+        $data['account']['is_provider']=isset($request->is_provider) ? $request->is_provider : '';
+        $data['account']['language']=isset($request->language) ? $request->language : '';
 
         $exist=User::withTrashed()->where('email',$data['user']['email'])->orWhere('mobile',$data['user']['mobile'])->exists();
         $aadhaar_exist=Account::where('aadhaar',$data['account']['aadhaar'])->exists();
