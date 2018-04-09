@@ -23,13 +23,23 @@ Route::group(['namespace' => 'API'], function () {
 
     Route::get('ping', 'TestController@ping');
     Route::post('postapi', 'TestController@post_test');
+    Route::get('aadhaar', 'TestController@testaadhaar');
+
 
     /*Accounts*/
+    Route::post('accounts/login', 'UserController@login');
+    Route::post('accounts/register', 'UserController@register');
+    Route::post('accounts/{id}', 'UserController@resetPassword');
+    Route::put('accounts/{id}', 'UserController@update');
+    Route::delete('accounts/{id}', 'UserController@delete');
 
-    Route::post('accounts/login', 'UserController@Login');
-    Route::post('accounts/register', 'UserController@Register');
-    Route::put('accounts/{id}', 'UserController@ResetPassword');
-
-    /**/
+    /*Services*/
+    Route::get('services/{id}', 'ServiceController@index');
+    Route::get('services/find/{id}', 'ServiceController@show');
+    Route::post('services/{id}', 'ServiceController@store');
+    Route::put('services/{id}', 'ServiceController@update');
+    Route::delete('services/{id}', 'ServiceController@delete');
+    Route::get('services/location/{location}', 'ServiceController@serviceByLocation');
+    Route::get('services/provider/{id}', 'ServiceController@serviceByProvider');
 
 });
