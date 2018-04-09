@@ -14,6 +14,12 @@ class Account extends Model implements AuditableContract
 
     protected $fillable=[
         'aadhaar',
+        'cover_photo',
+        'location',
+        'is_provider',
+        'language',
+        'aadhaar_verified',
+        'is_blocked'
     ];
 
     public function user()

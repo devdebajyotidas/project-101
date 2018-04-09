@@ -32,30 +32,40 @@ class UserController extends Controller
             return response()->json($response,Response::HTTP_OK);
         }
 
-        if($request->get('password') && Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], true))
-        {
-            $user = Auth::user();
-            $user->fcm_token = isset($request->fcm_token) ? $request->get('fcm_token') : '';
-            $user->save();
+        try{
+            if($request->get('password') && Auth::attempt(['email' => $request->get('email'), 'password' => $request->get('password')], true))
+            {
+                $fcm_token=isset($request->fcm_token) ? $request->get('fcm_token') : '';
+                $user = Auth::user();
 
-            $account=User::with('account')->where('account_id',$user->account_id)->first();
+                if(!is_null($fcm_token)){
+                    $user->fcm_token = $fcm_token;
+                    $user->save();
+                }
 
-            $response['success'] = true;
-            $response['user'] = $account;
-            $response['error'] = '';
-            return response()->json($response,Response::HTTP_OK);
-        }
-        else
-        {
+                $account=User::with('account')->where('account_id',$user->account_id)->first();
+
+                $response['success'] = true;
+                $response['user'] = $account;
+                $response['error'] = '';
+                return response()->json($response,Response::HTTP_OK);
+            }
+            else
+            {
+                $response['success'] = false;
+                $response['user'] = null;
+                $response['error'] = 'Invalid Email or Password!';
+                return response()->json($response,Response::HTTP_OK);
+            }
+        }catch (\Exception $exception){
             $response['success'] = false;
             $response['user'] = null;
-            $response['error'] = 'Invalid Email or Password!';
-            return response()->json($response,Response::HTTP_OK);
+            $response['error'] = $exception->getMessage();
+            return response()->json($response,Response::HTTP_BAD_REQUEST);
         }
     }
 
     /*Register*/
-
     function register(Request $request){
         $response = [];
 
@@ -116,10 +126,59 @@ class UserController extends Controller
         }
     }
 
-    /*Logout*/
+    /*Profile Update*/
+    function update(Request $request,$id){
+        $response = new \stdClass();
+        DB::beginTransaction();
 
-    public function logout($id)
-    {
+        if(!isset($id) && empty($id)){
+            $response->status=false;
+            $response->message="Please select an account to udpate";
+            $http=Response::HTTP_OK;
+            return response()->json($response,$http);
+        }
+
+        $data['user']=$request->get('user');
+        $data['account']=$request->get('account');
+
+        $user=User::where('account_id',$id)->first();
+        $account=Account::find($id);
+
+        try{
+            if(!empty($data['user'])){
+                $user_save=$user->update($data['user']);
+            }
+            else{
+                $user_save=true;
+            }
+
+            if(!empty($data['account'])){
+                $account_save=$account->update($data['account']);
+            }
+            else{
+                $account_save=true;
+            }
+
+            if($user_save && $account_save){
+                DB::commit();
+                $response->status=true;
+                $response->message="Account has been updated";
+                $http=Response::HTTP_CREATED;
+            }
+            else{
+                DB::rollBack();
+                $response->status=true;
+                $response->message="Unable to update the account";
+                $http=Response::HTTP_OK;
+            }
+        }catch(\Exception $exception){
+            $response->status=false;
+            $response->message=$exception->getMessage();
+            $http=Response::HTTP_BAD_REQUEST;
+        }
+
+        return response()->json($response,$http);
 
     }
+
 }
