@@ -80,10 +80,11 @@ class UserController extends Controller
         $data['account']['aadhaar']=isset($request->aadhaar) ? $request->aadhaar : '';
 
         $exist=User::withTrashed()->where('email',$data['user']['email'])->orWhere('mobile',$data['user']['mobile'])->exists();
-        if($exist){
+        $aadhaar_exist=Account::where('aadhaar',$data['account']['aadhaar'])->exists();
+
+        if($exist || $aadhaar_exist){
             $response['success'] = false;
-            $response['data'] = null;
-            $response['error'] = 'User Already exists';
+            $response['message'] = 'User already exists';
             return response()->json($response,Response::HTTP_OK);
         }
 
@@ -98,31 +99,27 @@ class UserController extends Controller
 
                 if($account->user()->save($user)){
                     DB::commit();
-                    $response['success'] = true;
-                    $response['data'] = $account->id;
-                    $response['error'] = false;
+                    $response['status'] = true;
+                    $response['message'] = "A new user has been added";
                     return response()->json($response,Response::HTTP_CREATED);
                 }else{
                     DB::rollBack();
-                    $response['success'] = false;
-                    $response['data'] = null;
-                    $response['error'] = 'Unable to create account';
+                    $response['status'] = false;
+                    $response['message'] = 'Unable to create account';
                     return response()->json($response,Response::HTTP_OK);
                 }
 
             }else{
-                $response['success'] = false;
-                $response['data'] = null;
-                $response['error'] = 'Invalid Data';
-                return response()->json($response,Response::HTTP_BAD_REQUEST);
+                $response['status'] = false;
+                $response['message'] = 'Some required parameters are missing';
+                return response()->json($response,Response::HTTP_OK);
             }
 
         }catch(\Exception $exception){
 
             $response['success'] = false;
-            $response['data'] = null;
-            $response['error'] = $exception->getMessage();
-            return response()->json($response,Response::HTTP_INTERNAL_SERVER_ERROR);
+            $response['message'] = $exception->getMessage();
+            return response()->json($response,Response::HTTP_BAD_REQUEST);
         }
     }
 
