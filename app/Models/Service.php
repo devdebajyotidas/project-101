@@ -12,9 +12,14 @@ class Service extends Model
     protected $fillable=[
         'account_id',
         'name',
+        'is_active'
     ];
 
     public function account(){
-        return $this->belongsTo('App\Models\Account')->withTrashed();
+
+        return $this->belongsTo('App\Models\Account');
+
     }
+
+
 }

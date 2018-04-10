@@ -13,9 +13,15 @@ class Account extends Model implements AuditableContract
     public $timestamps = false;
 
     protected $fillable=[
+        'address',
+        'city',
+        'state',
+        'country',
+        'zip',
         'aadhaar',
         'cover_photo',
-        'location',
+        'longitude',
+        'latitude',
         'is_provider',
         'language',
         'aadhaar_verified',
@@ -25,5 +31,10 @@ class Account extends Model implements AuditableContract
     public function user()
     {
         return $this->morphOne('App\Models\User','account');
+    }
+
+    public function service()
+    {
+        return $this->hasMany('App\Models\Service','account_id','id');
     }
 }
