@@ -34,12 +34,14 @@ Route::group(['namespace' => 'API'], function () {
     Route::delete('accounts/{id}', 'UserController@delete');
 
     /*Services*/
+    Route::post('services/{id}', 'ServiceController@store');//service provider id
     Route::get('services/{id}', 'ServiceController@index'); //service provider id
     Route::get('services/show/{userId}/{serviceId}', 'ServiceController@show');//service id
-    Route::post('services/{id}', 'ServiceController@store');//service provider id
     Route::put('services/{id}', 'ServiceController@update');//service id
     Route::delete('services/{id}', 'ServiceController@delete');//service id
-    Route::get('services/location/{id}', 'ServiceController@serviceByLocation');//current user id
-    Route::get('services/provider/{id}', 'ServiceController@serviceByProvider');//service provider id
+
+//    Route::get('services/location/{id}', 'ServiceController@listByTaker');//current user id
+//    Route::get('services/provider/{id}', 'ServiceController@serviceByProvider');//service provider id
+    Route::post('services/search/{user_id}', 'ServiceController@search');
 
 });

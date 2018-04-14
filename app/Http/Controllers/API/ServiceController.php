@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Account;
+use App\Models\SearchLog;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -35,7 +36,6 @@ class ServiceController extends Controller
     }
 
     /*service details*/
-    /*This in incomplete...will be updated after future changes*/
     function show($userId,$serviceId){
         $response=new \stdClass();
         if(isset($userId) && !empty($userId) && isset($serviceId) && !empty($serviceId)){
@@ -50,7 +50,7 @@ class ServiceController extends Controller
                 'provider_id'=>$account->id,
                 'name'=>$service->name,
                 'service_id'=>$service->id,
-                'address'=>$this->addressFormat($account->address,$account->city,$account->state,$account->country,$account->zip),
+                'address'=>$this->formattedAddress($account->address,$account->city,$account->state,$account->country,$account->zip),
                 'ratings'=>0,
                 'distance'=>$distance." Km"
             );
@@ -69,7 +69,7 @@ class ServiceController extends Controller
         return response()->json($response,$http);
     }
 
-    function addressFormat($address,$city,$state,$country,$zip){
+    function formattedAddress($address,$city,$state,$country,$zip){
         $formatted=null;
 
         if(!empty($address))
@@ -124,9 +124,9 @@ class ServiceController extends Controller
 
         if($count > 0){
             DB::commit();
-           $response->status=true;
-           $response->message="Services has been added";
-           $http=Response::HTTP_CREATED;
+            $response->status=true;
+            $response->message="Services has been added";
+            $http=Response::HTTP_CREATED;
         }
         else{
             DB::rollBack();
@@ -216,16 +216,57 @@ class ServiceController extends Controller
         return response()->json($response,$http);
     }
 
-    /*service by location*/
-    function serviceByLocation($id){
+    /*Service list by city*/
+
+    function listByCity($city){
         $response=new \stdClass();
 
-        if(isset($id) && !empty($id)){
+        if(isset($city) && !empty($city)){
+            $ids=Account::where('city',$city)->pluck('id')->get();
+            $services=Service::whereIn('account_id',$ids)->where('is_active','1')->get(['name','id']);
+            $response->status=true;
+            $response->data=$services;
+            $response->message="Service found";
+            $http=Response::HTTP_OK;
+        }
+        else{
+            $response->status=true;
+            $response->data=array();
+            $response->message="Please provide a valid city";
+            $http=Response::HTTP_OK;
+        }
+        return response()->json($response,$http);
+    }
 
-            $coordinates=$this->getUserLocation($id);
+    /*service by location*/
+    function listByLocation($latitude,$longitude){
+        return $this->locationServices($latitude,$longitude);
+    }
 
-            $lat = $coordinates->latitude;
-            $lon = $coordinates->longitude;
+    function listByTaker($id){
+        $response=new \stdClass();
+
+        if(!isset($id) || empty($id)){
+            $response->status=true;
+            $response->data=array();
+            $response->message="Please provide a valid account";
+            $http=Response::HTTP_OK;
+            return response()->json($response,$http);
+        }
+
+        $cord=$this->getUserLocation($id);
+        return $this->locationServices($cord->latitude,$cord->longitude);
+
+    }
+
+    function locationServices($latitude,$longitude){
+        $response=new \stdClass();
+
+        $lat=isset($latitude) ? $latitude : '';
+        $lon=isset($longitude) ? $longitude : '';
+
+        if(!empty($lat) && !empty($lon)){
+
             $radius = 1; // Km
 
             $angle_radius = $radius / ( 111 * cos( $lat ) ); // Every lat|lon degree° is ~ 111Km
@@ -253,7 +294,7 @@ class ServiceController extends Controller
         else{
             $response->status=false;
             $response->data=array();
-            $response->message="Please provide a valid account";
+            $response->message="Unable to detect the service area";
             $http=Response::HTTP_OK;
         }
 
@@ -281,6 +322,9 @@ class ServiceController extends Controller
         return $result;
     }
 
+    function abd(){
+
+    }
     /*service by provider*/
     function serviceByProvider($provider){
         $response=new \stdClass();
@@ -301,5 +345,182 @@ class ServiceController extends Controller
 
         return response()->json($response,$http);
     }
+
+    function search(Request $request,$user_id){
+        $response=new \stdClass();
+
+        $user_id=$log['account_id']=isset($user_id) ? $user_id : '';//optional
+        $name=$log['name']=isset($request->service) ? $request->service : '';
+        $latitude=isset($request->latitude) ? $request->latitude : '';//optional
+        $longitude=isset($request->longitude) ? $request->longitude : '';//optional
+        $rad=$log['radius']=isset($request->radius) ? $request->radius: 1;
+
+        if(empty($name)){
+            $response->status=false;
+            $response->data=array();
+            $response->message="No search paramter found";
+            $http=Response::HTTP_OK;
+            return response()->json($response,$http);
+        }
+
+        if(empty($user_id)){
+            $response->status=false;
+            $response->data=array();
+            $response->message="Unable to find the services";
+            $http=Response::HTTP_OK;
+            return response()->json($response,$http);
+        }
+
+        $location=$this->getUserLocation($user_id);
+        if(empty($latitude) && empty($longitude)){
+            $lat=$log['latitude']=$location->latitude;
+            $lon=$log['longitude']=$location->longitude;
+        }
+        else{
+            $lat=$log['latitude']=$latitude;
+            $lon=$log['longitude']=$longitude;
+        }
+
+        /*Add search logs*/
+        SearchLog::create($log);
+
+        try{
+            if(!empty($lat) && !empty($lon)){
+
+                $radius = !empty($rad) ? $rad : 1; // Km
+
+                $min_lon = $lon-$radius/(cos(deg2rad($lat)));
+                $max_lon=  $lon+$radius/(cos(deg2rad($lat)));
+                $min_lat = $lat-($radius);
+                $max_lat = $lat+($radius);
+
+                $results=Account::whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->where('is_provider','1')->get();
+                $n_rows = count( $results);
+                for($i=0; $i<$n_rows; $i++) {
+                    if($this->getDistanceBetweenPointsNew($lat, $lon, $results[$i]->latitude, $results[$i]->longitude, 'Km') > $radius) {
+                        unset($results[$i]);
+                    }
+                }
+
+                $ids=$results->pluck('id')->toArray();
+                $services=Service::with('account')->whereIn('account_id',$ids)->where('name','LIKE',"%{$name}%")->where('is_active','1')->get();
+
+                $info=[];
+                foreach ($services as $key=>$service) {
+                    $info[$key]['provider_id'] = $service->account_id;
+                    $info[$key]['service_id'] = $service->id;
+                    $info[$key]['name'] = $service->name;
+                    $info[$key]['latitude'] = $service->account->latitude;
+                    $info[$key]['longitude'] = $service->account->longitude;
+                }
+
+                $response->status=true;
+                $response->data=$info;
+                $response->message="Service found";
+                $http=Response::HTTP_OK;
+            }
+            else{
+                $services=Service::with('account')->where('name','LIKE',"%{$name}%")->where('is_active','1')->get();
+
+                $info=[];
+                foreach ($services as $key=>$service) {
+                    $info[$key]['provider_id'] = $service->account_id;
+                    $info[$key]['service_id'] = $service->id;
+                    $info[$key]['name'] = $service->name;
+                    $info[$key]['latitude'] = $service->account->latitude;
+                    $info[$key]['longitude'] = $service->account->longitude;
+                }
+
+                $response->status=true;
+                $response->data=$info;
+                $response->message="Service found";
+                $http=Response::HTTP_OK;
+            }
+        }catch(\Exception $exception){
+            $response->status=false;
+            $response->data=array();
+            $response->message=$exception->getMessage();
+            $http=Response::HTTP_BAD_REQUEST;
+        }
+
+        return response()->json($response,$http);
+    }
+
+//    function search2(Request $request,$user_id){
+//        $location=$this->getUserLocation($user_id);
+//        if(empty($latitude) && empty($longitude)){
+//            $lat=$log['latitude']=$location->latitude;
+//            $lon=$log['longitude']=$location->longitude;
+//        }
+//        else{
+//            $lat=$log['latitude']=$latitude;
+//            $lon=$log['longitude']=$longitude;
+//        }
+//
+//        if(!empty($lat) && !empty($lon)) {
+//            $circle_radius = 3959;
+//            $distance = 10;
+//            $result=DB::select("SELECT id, (' . $circle_radius . ' * acos(cos(radians(' . $lat . ')) * cos(radians(latitude)) *
+//                    cos(radians(longitude) - radians(' . $lon . ')) +
+//                    sin(radians(' . $lat . ')) * sin(radians(latitude))))
+//                    AS distance
+//                    FROM accounts");
+//
+//            return json_encode($result);
+//        }
+//        else{
+//            $ids=null;
+//        }
+//
+//        return $ids;
+//    }
+
+//    function search_extra(Request $request,$user_id){
+//        $location=$this->getUserLocation($user_id);
+//        if(empty($latitude) && empty($longitude)){
+//            $lat=$log['latitude']=$location->latitude;
+//            $lon=$log['longitude']=$location->longitude;
+//        }
+//        else{
+//            $lat=$log['latitude']=$latitude;
+//            $lon=$log['longitude']=$longitude;
+//        }
+//
+//        if(!empty($lat) && !empty($lon)) {
+
+//            $radius = 10 * (1/1.609344);
+//            $radius = 10 ;
+//            $angle_radius = $radius / ( 111 * cos( $lat ) );
+//            $angle_radius = 0.018;
+
+//            $max_lat=$lat + ($radius*$angle_radius);
+//            $min_lat=$lat - ($radius*$angle_radius);
+//
+//            $max_lon=$lon + ($radius*$angle_radius);
+//            $min_lon=$lon - ($radius*$angle_radius);
+//
+//            $min_lon = $lon-$radius/abs(cos(deg2rad($lat)));
+//            $max_lon= $lon+$radius/abs(cos(deg2rad($lat)));
+//            $min_lat = $lat-($radius);
+//            $max_lat = $lat+($radius);
+//
+//            $results=Account::whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->where('is_provider','1')->get();
+//            $n_rows = count( $results);
+//            for($i=0; $i<$n_rows; $i++) {
+//                if($this->getDistanceBetweenPointsNew($lat, $lon, $results[$i]->latitude, $results[$i]->longitude, 'Mi') > $radius) {
+//                    unset($results[$i]);
+//                }
+//            }
+//
+//            $ids=$results->pluck('id')->toArray();
+//            return $ids;
+//
+//        }
+//        else{
+//            $ids=null;
+//        }
+//
+//        return $ids;
+//    }
 
 }

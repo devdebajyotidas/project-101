@@ -160,6 +160,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Qafeen\Aadhaar\AadhaarServiceProvider::class,
 
     ],
 
@@ -209,7 +210,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        'Aadhaar' => Qafeen\Aadhaar\AadhaarFacade::class,
     ],
 
 ];

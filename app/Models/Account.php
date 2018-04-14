@@ -13,6 +13,7 @@ class Account extends Model implements AuditableContract
     public $timestamps = false;
 
     protected $fillable=[
+        'about',
         'address',
         'city',
         'state',
