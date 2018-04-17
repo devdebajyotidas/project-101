@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Account;
+use App\Models\Comments;
 use App\Models\SearchLog;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -45,13 +46,17 @@ class ServiceController extends Controller
 
             $distance=$this->getDistanceBetweenPointsNew($cord->latitude, $cord->longitude, $account->latitude, $account->longitude, $unit = 'Km');
 
+            $comments=Comments::where('provider_id',$service->account_id)->get();
+            $total = $comments->sum('ratings');
+            $rating=number_format(floatval($total) / count($comments),1);
+
             $data=array(
                 'provider'=>$service->account->user->name,
                 'provider_id'=>$account->id,
                 'name'=>$service->name,
                 'service_id'=>$service->id,
                 'address'=>$this->formattedAddress($account->address,$account->city,$account->state,$account->country,$account->zip),
-                'ratings'=>0,
+                'ratings'=>$rating,
                 'distance'=>$distance." Km"
             );
             $response->status=true;
@@ -403,7 +408,7 @@ class ServiceController extends Controller
                 }
 
                 $ids=$results->pluck('id')->toArray();
-                $services=Service::with('account')->whereIn('account_id',$ids)->where('name','LIKE',"%{$name}%")->where('is_active','1')->get();
+                $services=Service::with('account','comment')->whereIn('account_id',$ids)->where('name','LIKE',"%{$name}%")->where('is_active','1')->get();
 
                 $info=[];
                 foreach ($services as $key=>$service) {

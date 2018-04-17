@@ -65,12 +65,16 @@ class User extends Authenticatable implements AuditableContract
 
     public function account()
     {
-//        return $this->morphTo('account')->withTrashed();
         return $this->morphTo('account');
     }
 
     public static function resolveId()
     {
         return Auth::check() ? Auth::user()->getAuthIdentifier() : null;
+    }
+
+    public function comment()
+    {
+        return $this->hasMany('App\Models\Comments','user_id','account_id');
     }
 }

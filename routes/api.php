@@ -39,9 +39,13 @@ Route::group(['namespace' => 'API'], function () {
     Route::get('services/show/{userId}/{serviceId}', 'ServiceController@show');//service id
     Route::put('services/{id}', 'ServiceController@update');//service id
     Route::delete('services/{id}', 'ServiceController@delete');//service id
-
-//    Route::get('services/location/{id}', 'ServiceController@listByTaker');//current user id
-//    Route::get('services/provider/{id}', 'ServiceController@serviceByProvider');//service provider id
     Route::post('services/search/{user_id}', 'ServiceController@search');
+
+
+    /*Comments & Ratings*/
+    Route::get('comment/{provider_id}', 'CommentController@index');
+    Route::post('comment', 'CommentController@store');
+    Route::put('comment/{comment_id}', 'CommentController@update');
+
 
 });

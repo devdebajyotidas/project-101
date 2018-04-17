@@ -21,12 +21,9 @@ class Service extends Model
 
     }
 
-    public function ScopeDistance($query,$from_latitude,$from_longitude,$distance)
-    {
-        // This will calculate the distance in km
-        // if you want in miles use 3959 instead of 6371
-        $raw = \DB::raw('ROUND ( ( 6371 * acos( cos( radians('.$from_latitude.') ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians('.$from_longitude.') ) + sin( radians('.$from_latitude.') ) * sin( radians( latitude ) ) ) ) ) AS distance');
-        return $query->select('*')->addSelect($raw)->orderBy( 'distance', 'ASC' )->groupBy('distance')->having('distance', '<=', $distance);
-    }
+//    public function comment()
+//    {
+//        return $this->hasMany('App\Models\Comments','provider_id','account_id');
+//    }
 
 }
