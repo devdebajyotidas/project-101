@@ -15,7 +15,9 @@ class CreateOtpsTable extends Migration
     {
         Schema::create('otps', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('otp')->unique();
+            $table->integer('otp');
+            $table->integer('account_id');
+            $table->text('request_id');
             $table->dateTime('expiry');
             $table->timestamps();
         });

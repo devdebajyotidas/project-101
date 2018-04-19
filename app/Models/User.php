@@ -27,7 +27,9 @@ class User extends Authenticatable implements AuditableContract
         'password',
         'account_id',
         'account_type',
-        'verification_token'
+        'verification_token',
+        'mobile_verified',
+        'email_verified'
     ];
 
     /**
@@ -49,11 +51,11 @@ class User extends Authenticatable implements AuditableContract
     public static $rules = [
         "create" => [
             'email' => 'email|unique:users',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'confirmed|min:6',
         ],
         "update" => [
-            'email' => 'email',
-            'password' => 'min:6',
+            'email' => 'email|unique:users',
+            'password' => 'confirmed|min:6',
         ],
 
     ];

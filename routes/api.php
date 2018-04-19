@@ -27,7 +27,9 @@ Route::group(['namespace' => 'API'], function () {
 
 
     /*Accounts*/
-    Route::post('accounts/login', 'UserController@login');
+    Route::post('accounts/login', 'UserController@checkOtp');
+    Route::post('accounts/otp', 'UserController@requestOtp');
+    Route::post('accounts/login/advanced', 'UserController@login');
     Route::post('accounts/register', 'UserController@register');
     Route::post('accounts/{id}', 'UserController@resetPassword');
     Route::put('accounts/{id}', 'UserController@update');
