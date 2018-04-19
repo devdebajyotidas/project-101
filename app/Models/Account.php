@@ -20,6 +20,7 @@ class Account extends Model implements AuditableContract
         'country',
         'zip',
         'aadhaar',
+        'photo',
         'cover_photo',
         'longitude',
         'latitude',
