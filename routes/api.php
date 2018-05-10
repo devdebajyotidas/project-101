@@ -28,7 +28,8 @@ Route::group(['namespace' => 'API'], function () {
 
     /*Accounts*/
     Route::post('accounts/login', 'UserController@checkOtp');
-    Route::post('accounts/otp', 'UserController@requestOtp');
+    Route::post('accounts/otp/request', 'UserController@requestOtp');
+    Route::get('accounts/otp/resend/{request_id}', 'UserController@resendOtp');
     Route::post('accounts/login/advanced', 'UserController@login');
     Route::post('accounts/register', 'UserController@register');
     Route::post('accounts/{id}', 'UserController@resetPassword');

@@ -14,3 +14,24 @@
 Route::get('/', function () {
     return view('welcome');
 });
+Route::group(['namespace' => 'Web'], function () {
+
+    Auth::routes();
+    Route::get('logout', 'Auth\LoginController@logout');
+
+    Route::get('home', 'HomeController@home');
+
+    Route::get('settings', 'SettingsController@home');
+
+    Route::get('users', 'EmployeeController@index');
+
+    Route::get('takers', 'CustomerController@index');
+
+    Route::get('providers', 'CustomerController@index');
+
+    Route::get('services', 'ServiceController@index');
+
+    Route::get('reports', 'ReportController@index');
+
+    Route::get('analytics', 'AnalyticController@index');
+});

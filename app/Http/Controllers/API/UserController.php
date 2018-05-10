@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Http\Controllers\API;
 
+use App\Mail\SignupMail;
 use App\Models\Account;
 use App\Models\Otp;
 use Illuminate\Http\Request;
@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,9 +23,9 @@ class UserController extends Controller
 
         DB::beginTransaction();
 
-        $mobile=$request->mobile;
-        if(!isset($mobile) || is_null($mobile)){
-            $response['status'] = false;
+        $mobile=isset($request->mobile) ? $request->mobile : '';
+        if(empty($mobile)){
+            $response['success'] = false;
             $response['request_id'] = null;
             $response['message'] = 'Invalid Mobile';
             return response()->json($response,Response::HTTP_OK);
@@ -33,7 +34,7 @@ class UserController extends Controller
         $account_id=User::where('mobile',$mobile)->pluck('account_id')->first();
 
         if(!isset($account_id) || is_null($account_id)){
-            $response['status'] = true;
+            $response['success'] = true;
             $response['request_id'] = null;
             $response['message'] = 'Account does not exist';
         }
@@ -48,16 +49,46 @@ class UserController extends Controller
 
             if($otp){
                 DB::commit();
-                $response['status'] = true;
+                $response['success'] = true;
                 $response['request_id'] = $data['request_id'];
                 $response['message'] = 'An otp has been sent';
             }
             else{
-                DB::fallBack();
-                $response['status'] = false;
+                DB::rollback();
+                $response['success'] = false;
                 $response['request_id'] = null;
                 $response['message'] = 'Unable to sent the otp';
             }
+        }
+
+        return response()->json($response);
+    }
+
+    function resendOtp($request_id=null){
+        $response=new \stdClass();
+
+        if(!empty($request_id)){
+            $response->success=false;
+            $response->message="Request id is required";
+            return response()->json($response);
+        }
+
+        $now = time();
+        $two_minutes = $now + (2 * 60);
+        $expiry=date('Y-m-d H:i:s', $two_minutes);
+        $result=Otp::where('request_id',$request_id)->where('expiry', '<=', date('Y-m-d H:i:s'))->first();
+
+        if($result){
+            $otp=$result->otp;
+            //Handle otp sent to mobile
+            $result->expiry=$expiry;
+            $result->update();
+            $response->success=true;
+            $response->message="Otp has been sent";
+        }
+        else{
+            $response->success=false;
+            $response->message="Unable to sent the otp";
         }
 
         return response()->json($response);
@@ -70,7 +101,7 @@ class UserController extends Controller
         $request_id=$request->request_id;
 
         if(!isset($otp) && is_null($otp)){
-            $response['status'] = false;
+            $response['success'] = false;
             $response['data'] = null;
             $response['message'] = 'Invalid otp';
 
@@ -78,13 +109,13 @@ class UserController extends Controller
         }
 
         if(!isset($request_id) && is_null($request_id)){
-            $response['status'] = false;
+            $response['success'] = false;
             $response['data'] = null;
             $response['message'] = 'Invalid rquest id';
             return response()->json($response,Response::HTTP_OK);
         }
 
-        $account_id=Otp::where('request_id',$request_id)->where('otp',$otp)->where('expiry', '>=', date('Y-m-d H:i:s'))->pluck('account_id')->first();
+        $account_id=Otp::where('request_id',$request_id)->where('otp',$otp)->where('expiry', '<=', date('Y-m-d H:i:s'))->pluck('account_id')->first();
 
         if(isset($account_id) && !empty($account_id)){
             $user=User::where('account_id',$account_id)->first();
@@ -103,13 +134,13 @@ class UserController extends Controller
 
             $account=User::with('account')->where('account_id',$account_id)->first();
 
-            $response['status'] = true;
+            $response['success'] = true;
             $response['data'] = $account;
             $response['message'] = 'Account found';
             return response()->json($response,Response::HTTP_OK);
         }
         else{
-            $response['status'] = false;
+            $response['success'] = false;
             $response['data'] = null;
             $response['message'] = 'Invalid otp';
             return response()->json($response,Response::HTTP_OK);
@@ -122,14 +153,14 @@ class UserController extends Controller
         $response = [];
 
         if(!isset($request->password) || is_null($request->password)){
-            $response['status'] = false;
+            $response['success'] = false;
             $response['data'] = null;
             $response['message'] = 'Invalid password';
             return response()->json($response,Response::HTTP_OK);
         }
 
         if(!isset($request->email) || is_null($request->email)){
-            $response['status'] = false;
+            $response['success'] = false;
             $response['data'] = null;
             $response['message'] = 'Invalid email address';
             return response()->json($response,Response::HTTP_OK);
@@ -148,20 +179,20 @@ class UserController extends Controller
 
                 $account=User::with('account')->where('account_id',$user->account_id)->first();
 
-                $response['status'] = true;
+                $response['success'] = true;
                 $response['data'] = $account;
                 $response['message'] = '';
                 return response()->json($response,Response::HTTP_OK);
             }
             else
             {
-                $response['status'] = false;
+                $response['success'] = false;
                 $response['data'] = null;
                 $response['message'] = 'Invalid Email or Password!';
                 return response()->json($response,Response::HTTP_OK);
             }
         }catch (\Exception $exception){
-            $response['status'] = false;
+            $response['success'] = false;
             $response['data'] = null;
             $response['message'] = $exception->getMessage();
             return response()->json($response,Response::HTTP_BAD_REQUEST);
@@ -170,15 +201,20 @@ class UserController extends Controller
 
     /*Register*/
     function register(Request $request){
-        $response = [];
 
-        DB::beginTransaction();
-
-        $data['user']['password_confirmation']=$data['user']['password']=$request->password;
-        $data['user']['verification_token'] = md5(microtime());
-        $data['user']['mobile']=$request->mobile;
-        $data['user']['email']=$request->email;
-        $data['user']['name']=$request->name;
+        $conf_pass=isset($request->password_confirmation) ? $request->password_confirmation : '';
+        if(!empty($conf_pass)){
+            $data['user']['password_confirmation']=$conf_pass;
+        }
+        else{
+            $data['user']['password_confirmation']=$request->get('password');
+        }
+        $data['user']['password']=$request->get('password');
+        $data['user']['verification_token'] = md5(time());
+        $data['user']['mobile']=$request->get('mobile');
+        $data['user']['email']=$request->get('email');
+        $data['user']['name']=isset($request->name) ? $request->name : '';
+        $data['user']['fcm_token']=isset($request->fcm_token) ? $request->fcm_token : '';
 
         $data['account']['aadhaar']=isset($request->aadhaar) ? $request->aadhaar : '';
         $data['account']['longitude']=isset($request->longitude) ? $request->longitude : '';
@@ -186,80 +222,61 @@ class UserController extends Controller
         $data['account']['is_provider']=isset($request->is_provider) ? $request->is_provider : '0';
         $data['account']['language']=isset($request->language) ? $request->language : '';
 
-        $exist=User::withTrashed()->where('email',$data['user']['email'])->orWhere('mobile',$data['user']['mobile'])->exists();
-        $aadhaar_exist=Account::where('aadhaar',$data['account']['aadhaar'])->exists();
+        $userValidator =  Validator::make($data['user'],User::$rules['create']);
+        if($userValidator->passes()){
 
-        if($exist || $aadhaar_exist){
-            $response['status'] = false;
-            $response['request_id']=null;
-            $response['message'] = 'User already exists';
-            return response()->json($response,Response::HTTP_OK);
-        }
+            $account = Account::create($data['account']);
+            $user = User::make($data['user']);
 
-        try {
+            if($account->user()->save($user)){
 
-            $userValidator = Validator::make($data['user'], User::$rules['create']);
-
-            if ($userValidator->passes())
-            {
-                $account = Account::create($data['account']);
-                $user = User::make($data['user']);
-
-                if($account->user()->save($user)){
-
-                    if(isset($data['user']['mobile']) && !empty($data['user']['mobile'])){
-                        $now = time();
-                        $two_minutes = $now + (2 * 60);
-                        $data['otp']='123456';
-                        $data['account_id']=$user->account_id;
-                        $data['request_id']=bin2hex(random_bytes(16));
-                        $data['expiry']=date('Y-m-d H:i:s', $two_minutes);
-                        $otp=Otp::create($data);
-                        if($otp){
-                            DB::commit();
-                            $response['status'] = true;
-                            $response['request_id']=$data['request_id'];
-                            $response['message'] = 'An otp has been sent';
-                            return response()->json($response,Response::HTTP_OK);
-                        }
-                        else{
-                            DB::rollBack();
-                            $response['status'] = false;
-                            $response['request_id']=null;
-                            $response['message'] = 'Unable to send the otp';
-                            return response()->json($response,Response::HTTP_OK);
-                        }
-                    }
-                    else{
+                Mail::to($user->email)->send(new SignupMail($user->name));
+                if(isset($data['user']['mobile']) && !empty($data['user']['mobile'])){
+                    $now = time();
+                    $two_minutes = $now + (2 * 60);
+                    $data['otp']='123456';
+                    $data['account_id']=$user->account_id;
+                    $data['request_id']=bin2hex(random_bytes(16));
+                    $data['expiry']=date('Y-m-d H:i:s', $two_minutes);
+                    $otp=Otp::create($data);
+                    if($otp){
                         DB::commit();
-                        $response['status'] = true;
-                        $response['request_id']=null;
-                        $response['message'] = 'Account has been created';
+                        $response['success'] = true;
+                        $response['request_id']=$data['request_id'];
+                        $response['message'] = 'An otp has been sent';
                         return response()->json($response,Response::HTTP_OK);
                     }
-
-                }else{
-                    DB::rollBack();
-                    $response['status'] = false;
+                    else{
+                        DB::rollBack();
+                        $response['success'] = false;
+                        $response['request_id']=null;
+                        $response['message'] = 'Unable to send the otp';
+                        return response()->json($response,Response::HTTP_OK);
+                    }
+                }
+                else{
+                    DB::commit();
+                    $response['success'] = true;
                     $response['request_id']=null;
-                    $response['message'] = 'Unable to create account';
+                    $response['message'] = 'Account has been created';
                     return response()->json($response,Response::HTTP_OK);
                 }
 
             }else{
-                $response['status'] = false;
+                DB::rollBack();
+                $response['success'] = false;
                 $response['request_id']=null;
-                $response['message'] = 'Some required parameters are missing';
+                $response['message'] = 'Unable to create account';
                 return response()->json($response,Response::HTTP_OK);
             }
-
-        }catch(\Exception $exception){
-
+        }
+        else{
             $response['success'] = false;
             $response['request_id']=null;
-            $response['message'] = $exception->getMessage();
-            return response()->json($response,Response::HTTP_BAD_REQUEST);
+            $response['message'] = $userValidator->errors()->first();
+            return response()->json($response,Response::HTTP_OK);
         }
+
     }
 
     /*Profile Update*/
@@ -268,7 +285,7 @@ class UserController extends Controller
         DB::beginTransaction();
 
         if(!isset($id) && empty($id)){
-            $response->status=false;
+            $response->success=false;
             $response->message="Please select an account to udpate";
             $http=Response::HTTP_OK;
             return response()->json($response,$http);
@@ -297,18 +314,18 @@ class UserController extends Controller
 
             if($user_save && $account_save){
                 DB::commit();
-                $response->status=true;
+                $response->success=true;
                 $response->message="Account has been updated";
                 $http=Response::HTTP_CREATED;
             }
             else{
                 DB::rollBack();
-                $response->status=true;
+                $response->success=true;
                 $response->message="Unable to update the account";
                 $http=Response::HTTP_OK;
             }
         }catch(\Exception $exception){
-            $response->status=false;
+            $response->success=false;
             $response->message=$exception->getMessage();
             $http=Response::HTTP_BAD_REQUEST;
         }
