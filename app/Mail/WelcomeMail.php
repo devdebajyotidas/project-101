@@ -29,6 +29,6 @@ class WelcomeMail extends Mailable
      */
     public function build()
     {
-        return $this->view('email.welcome');
+        return $this->subject("Welcome to ".ucfirst(config('app.name')))->view('email.welcome');
     }
 }

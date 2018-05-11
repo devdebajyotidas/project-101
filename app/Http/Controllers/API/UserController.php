@@ -34,7 +34,7 @@ class UserController extends Controller
         $account_id=User::where('mobile',$mobile)->pluck('account_id')->first();
 
         if(!isset($account_id) || is_null($account_id)){
-            $response['success'] = true;
+            $response['success'] = false;
             $response['request_id'] = null;
             $response['message'] = 'Account does not exist';
         }
@@ -67,7 +67,7 @@ class UserController extends Controller
     function resendOtp($request_id=null){
         $response=new \stdClass();
 
-        if(!empty($request_id)){
+        if(empty($request_id)){
             $response->success=false;
             $response->message="Request id is required";
             return response()->json($response);
@@ -76,12 +76,13 @@ class UserController extends Controller
         $now = time();
         $two_minutes = $now + (2 * 60);
         $expiry=date('Y-m-d H:i:s', $two_minutes);
-        $result=Otp::where('request_id',$request_id)->where('expiry', '<=', date('Y-m-d H:i:s'))->first();
+        $result=Otp::where('request_id',$request_id)->first();
 
         if($result){
-            $otp=$result->otp;
+            $otp='123456';
             //Handle otp sent to mobile
             $result->expiry=$expiry;
+            $result->otp=$otp;
             $result->update();
             $response->success=true;
             $response->message="Otp has been sent";
@@ -115,7 +116,7 @@ class UserController extends Controller
             return response()->json($response,Response::HTTP_OK);
         }
 
-        $account_id=Otp::where('request_id',$request_id)->where('otp',$otp)->where('expiry', '<=', date('Y-m-d H:i:s'))->pluck('account_id')->first();
+        $account_id=Otp::where('request_id',$request_id)->where('otp',$otp)->where('expiry', '>=', date('Y-m-d H:i:s'))->pluck('account_id')->first();
 
         if(isset($account_id) && !empty($account_id)){
             $user=User::where('account_id',$account_id)->first();

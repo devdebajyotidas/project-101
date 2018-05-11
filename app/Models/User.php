@@ -41,6 +41,10 @@ class User extends Authenticatable implements AuditableContract
     protected $hidden = [
         'password',
         'remember_token',
+        'verification_token',
+        'fcm_token',
+        'api_token',
+        'account_type'
     ];
 
     protected $dates = [
