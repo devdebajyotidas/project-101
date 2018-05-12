@@ -18,6 +18,7 @@ class CreateServiceTakensTable extends Migration
             $table->integer('service_id');
             $table->integer('provider_id');
             $table->integer('user_id');
+            $table->double('amount')->nullable();
             $table->dateTime('completed_at')->nullable();
             $table->timestamps();
         });

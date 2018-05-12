@@ -12,7 +12,26 @@ class Service extends Model
     protected $fillable=[
         'account_id',
         'name',
+        'rate',
+        'latitude',
+        'longitude',
+        'area',
         'is_active'
+    ];
+
+    public static $rules = [
+        "create" => [
+            'name' => 'required',
+            'rate'=>'required',
+            'area' => 'required',
+            'latitude' => 'required',
+            'longitude' => 'required',
+        ],
+        "update" => [
+            'name' => 'required',
+            'rate'=>'required',
+        ],
+
     ];
 
     public function account(){

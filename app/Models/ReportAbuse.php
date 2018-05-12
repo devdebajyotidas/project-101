@@ -6,5 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReportAbuse extends Model
 {
-    //
+    protected $fillable=[
+        'provider_id',
+        'user_id'
+    ];
 }

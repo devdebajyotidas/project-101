@@ -17,8 +17,10 @@ class CreateServicesTable extends Migration
             $table->increments('id');
             $table->integer('account_id');
             $table->string('name');
+            $table->double('rate');
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
+            $table->string('area')->nullable();
             $table->tinyInteger('is_active')->default('1');
             $table->timestamps();
             $table->softDeletes();

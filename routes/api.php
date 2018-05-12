@@ -36,17 +36,25 @@ Route::group(['namespace' => 'API'], function () {
     Route::get('profile/{account_id}', 'AccountContoller@index');
     Route::put('profile/{account_id}', 'AccountController@update');
     Route::delete('profile/{account_id}', 'AccountController@delete');
-    Route::post('profile/{account_id}/password', 'AccountController@changePassword');
+    Route::post('profile/{account_id}/change/password', 'AccountController@changePassword');
+    Route::post('profile/{account_id}/change/mobile', 'AccountController@changeMobile');
+    Route::post('profile/{account_id}/change/email', 'AccountController@changeEmail');
+    Route::post('profile/{account_id}/verify/email', 'AccountController@verifyEmail');
+    Route::post('profile/{account_id}/verify/aadhaar', 'AccountController@verifyAadhaar'); //incomplete
 
-    /*Services Provider*/
-    Route::post('services/{account_id}', 'ServiceController@store');
-    Route::get('services/{account_id}', 'ServiceController@index');
-    Route::get('services/show/{service_id}', 'ServiceController@show');
-    Route::put('services/{service_id}', 'ServiceController@update');
-    Route::delete('services/{service_id}', 'ServiceController@delete');
+    /*Service Provider*/
+    Route::get('service/{account_id}', 'ServiceController@index');
+    Route::get('service/show/{service_id}', 'ServiceController@show');
+    Route::post('service/{account_id}', 'ServiceController@store');
+    Route::put('service/{service_id}', 'ServiceController@update');
+    Route::delete('service/{service_id}', 'ServiceController@delete');
+    Route::get('timeline/{account_id}', 'ServiceController@timeline');
 
     /*Service Taker*/
-    Route::post('services/search', 'ServiceController@search');
+    Route::get('service/scatter', 'ServiceController@scatter');
+    Route::post('service/location', 'ServiceController@byLocation'); //lat,longi post
+    Route::post('service/search', 'ServiceController@search');
+    Route::get('service/bubble/{user_id}/{service_id}', 'ServiceController@bubble');
 
     /*Comments & Ratings*/
     Route::get('comment/{account_id}', 'CommentController@index');
@@ -54,7 +62,6 @@ Route::group(['namespace' => 'API'], function () {
     Route::put('comment/{comment_id}', 'CommentController@update');
 
     /*Main Page*/
-    Route::get('timeline/{account_id}', 'ServiceController@index');
     Route::post('services/load','ServiceController@load');
 
 

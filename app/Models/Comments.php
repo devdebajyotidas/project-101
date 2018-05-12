@@ -9,6 +9,7 @@ class Comments extends Model
     protected $fillable = [
         'provider_id',
         'user_id',
+        'service_id',
         'ratings',
         'comment'
     ];
