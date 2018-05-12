@@ -13,4 +13,12 @@ class ServiceTaken extends Model
         'amount',
         'completed_at'
     ];
+
+    public static $rules = [
+        "create" => [
+            'service_id' => 'required',
+            'user_id'=>'required',
+            'provider_id' => 'required',
+        ]
+    ];
 }

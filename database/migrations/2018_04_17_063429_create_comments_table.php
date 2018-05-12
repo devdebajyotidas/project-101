@@ -20,6 +20,7 @@ class CreateCommentsTable extends Migration
             $table->integer('service_id');
             $table->integer('ratings')->nullable();
             $table->text('comment')->nullable();
+            $table->tinyInteger('is_approved')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

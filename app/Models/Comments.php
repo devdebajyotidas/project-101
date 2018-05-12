@@ -11,7 +11,8 @@ class Comments extends Model
         'user_id',
         'service_id',
         'ratings',
-        'comment'
+        'comment',
+        'is_approved'
     ];
 
     public function user(){

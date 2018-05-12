@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Comments;
 use App\Models\SearchLog;
 use App\Models\Service;
+use App\Models\ServiceTaken;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
@@ -389,6 +390,124 @@ class ServiceController extends Controller
 
         return response()->json($response);
     }
+
+    function takeService(Request $request){
+        $response=new \stdClass();
+        $data=$request->all();
+
+        $validator=Validator::make($data,ServiceTaken::$rules['create']);
+        if($validator->passes()){
+            $taken=ServiceTaken::create($data);
+            if($taken){
+                /*Trigger Mail*/
+                $response->success=true;
+                $response->message="You have taken a service";
+            }
+            else{
+                $response->success=false;
+                $response->message="Something went wrong";
+            }
+        }
+        else{
+            $response->success=false;
+            $response->message=$validator->errors()->first();
+        }
+    }
+
+    function cancelTakenService($taken_id,$is_provider){
+        $response=new \stdClass();
+        $provider=isset($is_provider) ? $is_provider : 0;
+
+        if(!isset($taken_id) || empty($taken_id)){
+            $response->success=false;
+            $response->message="Service not found";
+            return response()->json($response);
+        }
+
+        $taken=ServiceTaken::find($taken_id);
+
+        if($taken){
+            if($provider==1){
+                if($taken->delete()){
+                    /*Trigger Mail*/
+                    $response->success=false;
+                    $response->message="Service has been canceled";
+                }
+                else{
+                    $response->success=false;
+                    $response->message="Unable to cancel the service";
+                }
+            }
+            else{
+                $d1= new DateTime(date('Y-m-d H:i:s'));
+                $d2= new DateTime($taken->created_at);
+                $interval= $d1->diff($d2);
+                $past=($interval->days * 24) + $interval->h;
+                if($past > 1){
+                    $response->success=false;
+                    $response->message="Service has been past 1 hour, contact provider to cancel";
+                }
+                else{
+                    if($taken->delete()){
+                        /*trigger Mail*/
+                        $response->success=false;
+                        $response->message="Service has been canceled";
+                    }
+                    else{
+                        $response->success=false;
+                        $response->message="Unable to cancel the service";
+                    }
+                }
+            }
+        }
+        else{
+            $response->success=false;
+            $response->message="Service does not exists";
+        }
+
+        return response()->json($response);
+    }
+
+    function done($taken_id){
+        $response=new \stdClass();
+
+        if(!isset($taken_id) || empty($taken_id)){
+            $response->success=false;
+            $response->message="Service not found";
+            return response()->json($response);
+        }
+
+        $taken=ServiceTaken::with('service')->find($taken_id);
+        if($taken){
+            $d1= new DateTime(date('Y-m-d H:i:s'));
+            $d2= new DateTime($taken->created_at);
+            $interval= $d1->diff($d2);
+            $duration=($interval->days * 24) + $interval->h;
+            $amount=$duration*$taken->service->rate;
+
+            $taken->completed_at=$d1;
+            $taken->amount=$amount;
+
+            if($taken->update()){
+                /*trigger Mail*/
+                $response->success=true;
+                $response->message="Service has been completed";
+            }
+            else{
+                $response->success=false;
+                $response->message="Something went wrong, try again";
+            }
+        }
+        else{
+            $response->success=false;
+            $response->message="Service doesn't exist";
+        }
+
+        return response()->json($response);
+
+    }
+
+    /*Common functions*/
 
     function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longitude2, $unit = 'Km')
     {

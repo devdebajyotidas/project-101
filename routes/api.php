@@ -55,11 +55,16 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('service/location', 'ServiceController@byLocation'); //lat,longi post
     Route::post('service/search', 'ServiceController@search');
     Route::get('service/bubble/{user_id}/{service_id}', 'ServiceController@bubble');
+    Route::post('service/take', 'ServiceController@takeService');
+
+    Route::delete('service/cancel/{taken_id}/{is_provider}', 'ServiceController@cancelTakenService');
+    Route::post('service/done/{taken_id}', 'ServiceController@done');
 
     /*Comments & Ratings*/
     Route::get('comment/{account_id}', 'CommentController@index');
     Route::post('comment', 'CommentController@store');
     Route::put('comment/{comment_id}', 'CommentController@update');
+    Route::post('comment/approve/{comment_id}', 'CommentController@approve');
 
     /*Main Page*/
     Route::post('services/load','ServiceController@load');
