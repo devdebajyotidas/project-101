@@ -36,6 +36,11 @@ class ServiceController extends Controller
 
     }
 
+    /*Provider timeline where display all service on login*/
+    function timeline(){
+
+    }
+
     /*service details*/
     function show($userId,$serviceId){
         $response=new \stdClass();

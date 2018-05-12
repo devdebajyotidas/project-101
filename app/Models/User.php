@@ -61,6 +61,7 @@ class User extends Authenticatable implements AuditableContract
         ],
         "update" => [
             'email' => 'email|unique:users',
+            'mobile'=>'unique:users',
             'password' => 'confirmed|min:6',
         ],
 

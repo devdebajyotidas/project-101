@@ -25,30 +25,37 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('postapi', 'TestController@post_test');
     Route::get('aadhaar', 'TestController@testaadhaar');
 
-
-    /*Accounts*/
+    /*Authentication*/
     Route::post('accounts/login', 'UserController@checkOtp');
     Route::post('accounts/otp/request', 'UserController@requestOtp');
     Route::get('accounts/otp/resend/{request_id}', 'UserController@resendOtp');
     Route::post('accounts/login/advance', 'UserController@login');
     Route::post('accounts/register', 'UserController@register');
-    Route::post('accounts/{id}', 'UserController@resetPassword');
-    Route::put('accounts/{id}', 'UserController@update');
-    Route::delete('accounts/{id}', 'UserController@delete');
 
-    /*Services*/
-    Route::post('services/{id}', 'ServiceController@store');//service provider id
-    Route::get('services/{id}', 'ServiceController@index'); //service provider id
-    Route::get('services/show/{userId}/{serviceId}', 'ServiceController@show');//service id
-    Route::put('services/{id}', 'ServiceController@update');//service id
-    Route::delete('services/{id}', 'ServiceController@delete');//service id
-    Route::post('services/search/{user_id}', 'ServiceController@search');
+    /*Profile*/
+    Route::get('profile/{account_id}', 'AccountContoller@index');
+    Route::put('profile/{account_id}', 'AccountController@update');
+    Route::delete('profile/{account_id}', 'AccountController@delete');
+    Route::post('profile/{account_id}/password', 'AccountController@changePassword');
 
+    /*Services Provider*/
+    Route::post('services/{account_id}', 'ServiceController@store');
+    Route::get('services/{account_id}', 'ServiceController@index');
+    Route::get('services/show/{service_id}', 'ServiceController@show');
+    Route::put('services/{service_id}', 'ServiceController@update');
+    Route::delete('services/{service_id}', 'ServiceController@delete');
+
+    /*Service Taker*/
+    Route::post('services/search', 'ServiceController@search');
 
     /*Comments & Ratings*/
-    Route::get('comment/{provider_id}', 'CommentController@index');
+    Route::get('comment/{account_id}', 'CommentController@index');
     Route::post('comment', 'CommentController@store');
     Route::put('comment/{comment_id}', 'CommentController@update');
+
+    /*Main Page*/
+    Route::get('timeline/{account_id}', 'ServiceController@index');
+    Route::post('services/load','ServiceController@load');
 
 
 });

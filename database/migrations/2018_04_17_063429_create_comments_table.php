@@ -20,6 +20,7 @@ class CreateCommentsTable extends Migration
             $table->integer('ratings')->nullable();
             $table->text('comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

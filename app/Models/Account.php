@@ -14,6 +14,7 @@ class Account extends Model implements AuditableContract
 
     protected $fillable=[
         'about',
+        'dob',
         'address',
         'city',
         'state',
