@@ -136,7 +136,7 @@ class UserController extends Controller
             $account=User::with('account')->where('account_id',$account_id)->first();
 
             $response['success'] = true;
-            $response['data'] = $account;
+            $response['data'] = $this->collectUser($account);
             $response['message'] = 'Account found';
             return response()->json($response,Response::HTTP_OK);
         }
@@ -181,7 +181,7 @@ class UserController extends Controller
                 $account=User::with('account')->where('account_id',$user->account_id)->first();
 
                 $response['success'] = true;
-                $response['data'] = $account;
+                $response['data'] = $this->collectUser($account);
                 $response['message'] = '';
                 return response()->json($response,Response::HTTP_OK);
             }
@@ -280,6 +280,13 @@ class UserController extends Controller
 
     }
 
-
+    function collectUser($user){
+        $data['name']=$user->name;
+        $data['account_id']=$user->account_id;
+        $data['photo']=$user->account->photo;
+        $data['is_provider']=$user->account->is_provider;
+        $data['is_blocked']=$user->account->is_blocked;
+        return $data;
+    }
 
 }
