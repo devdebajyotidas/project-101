@@ -14,7 +14,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
+use DateTime;
 
 class ServiceController extends Controller
 {
@@ -241,9 +241,6 @@ class ServiceController extends Controller
         }
 
         return response()->json($response);
-    }
-    function t1($val, $min, $max) {
-        return ($val >= $min && $val <= $max);
     }
 
     function byLocation(Request $request){
