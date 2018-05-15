@@ -18,7 +18,18 @@ class ServiceTaken extends Model
         "create" => [
             'service_id' => 'required',
             'user_id'=>'required',
-            'provider_id' => 'required',
         ]
     ];
+
+    public function account(){
+
+        return $this->hasMany('App\Models\Account','id','user_id');
+
+    }
+
+    public function service(){
+
+        return $this->belongsTo('App\Models\Service');
+
+    }
 }

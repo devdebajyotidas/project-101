@@ -10,6 +10,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class AccountController extends Controller
 {
@@ -35,6 +37,8 @@ class AccountController extends Controller
             $response->data=null;
             $response->message="Invalid account selection";
         }
+
+        return response()->json($response);
     }
 
     /*Profile Update*/
@@ -49,7 +53,7 @@ class AccountController extends Controller
         }
 
         $data['user']=$request->only(['name']);
-        $data['account']=$request->only(['about','dob','address','city','state','country','zip']);
+        $data['account']=$request->only(['about','dob','address','city','state','country','zip','photo']);
 
 
         $user=User::where('account_id',$account_id)->first();

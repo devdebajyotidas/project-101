@@ -33,7 +33,7 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('accounts/register', 'UserController@register');
 
     /*Profile*/
-    Route::get('profile/{account_id}', 'AccountContoller@index');
+    Route::get('profile/{account_id}', 'AccountController@index');
     Route::put('profile/{account_id}', 'AccountController@update');
     Route::delete('profile/{account_id}', 'AccountController@delete');
     Route::post('profile/{account_id}/change/password', 'AccountController@changePassword');
@@ -51,11 +51,11 @@ Route::group(['namespace' => 'API'], function () {
     Route::get('timeline/{account_id}', 'ServiceController@timeline');
 
     /*Service Taker*/
-    Route::get('service/scatter', 'ServiceController@scatter');
-    Route::post('service/location', 'ServiceController@byLocation'); //lat,longi post
-    Route::post('service/search', 'ServiceController@search');
-    Route::get('service/bubble/{user_id}/{service_id}', 'ServiceController@bubble');
-    Route::post('service/take', 'ServiceController@takeService');
+    Route::get('service/taker/scatter', 'ServiceController@scatter');
+    Route::post('service/taker/location', 'ServiceController@byLocation'); //lat,longi post
+    Route::post('service/taker/search', 'ServiceController@search');
+    Route::get('service/taker/bubble/{user_id}/{service_id}', 'ServiceController@bubble');
+    Route::post('service/taker/take', 'ServiceController@takeService');
 
     Route::delete('service/cancel/{taken_id}/{is_provider}', 'ServiceController@cancelTakenService');
     Route::post('service/done/{taken_id}', 'ServiceController@done');
@@ -65,9 +65,5 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('comment', 'CommentController@store');
     Route::put('comment/{comment_id}', 'CommentController@update');
     Route::post('comment/approve/{comment_id}', 'CommentController@approve');
-
-    /*Main Page*/
-    Route::post('services/load','ServiceController@load');
-
 
 });

@@ -7,11 +7,14 @@ use App\Models\Comments;
 use App\Models\SearchLog;
 use App\Models\Service;
 use App\Models\ServiceTaken;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+
 
 class ServiceController extends Controller
 {
@@ -59,7 +62,7 @@ class ServiceController extends Controller
             $data['service_id']=$service->id;
 
             $response->success=true;
-            $response->data=null;
+            $response->data=$data;
             $response->message="Service found";
         }
         else{
@@ -73,8 +76,6 @@ class ServiceController extends Controller
 
     function store(Request $request,$account_id){
         $response=new \stdClass();
-
-        DB::beginTransaction();
 
         if(!isset($account_id) || empty($account_id)){
             $response->success=false;
@@ -120,16 +121,22 @@ class ServiceController extends Controller
 
         if($validator->passes()){
             $service=Service::find($service_id);
-            $update=$service->update($data);
-            if($update){
-                DB::commit();
-                $response->success=true;
-                $response->message="Service has been updated";
+            if($service){
+                $update=$service->update($data);
+                if($update){
+                    DB::commit();
+                    $response->success=true;
+                    $response->message="Service has been updated";
+                }
+                else{
+                    DB::rollBack();
+                    $response->success=false;
+                    $response->message="Unable to update the service";
+                }
             }
             else{
-                DB::rollBack();
                 $response->success=false;
-                $response->message="Unable to update the service";
+                $response->message="Service not found";
             }
         }
         else{
@@ -151,14 +158,20 @@ class ServiceController extends Controller
         }
 
         $service=Service::find($service_id);
-        $delete=$service->delete();
-        if($delete){
-            $response->success=true;
-            $response->message="Service has been deleted";
+        if($service){
+            $delete=$service->delete();
+            if($delete){
+                $response->success=true;
+                $response->message="Service has been deleted";
+            }
+            else{
+                $response->success=false;
+                $response->message="Unable to delete the service";
+            }
         }
         else{
             $response->success=false;
-            $response->message="Unable to delete the service";
+            $response->message="Service not found";
         }
 
         return response()->json($response);
@@ -174,32 +187,24 @@ class ServiceController extends Controller
             return response()->json($response);
         }
 
-        $services=Service::with('serviceTaken','account')->get();
+        $services=ServiceTaken::with('service','account.user')->get();
 
         if($services){
+            $data = $services->map(function ($item) {
+                $completed_at=empty($item['completed_at']) ? date('Y-m-d H:i:s') : $item['completed_at'];
+                $d1= Carbon::createFromFormat('Y-m-d H:i:s',$completed_at);
+                $d2= Carbon::createFromFormat('Y-m-d H:i:s',$item['created_at']);
+                $interval= $d1->diff($d2);
+                $duration=($interval->days * 24) + $interval->h;
+                $account=$item['account'][0];
+                $user=$account['user'];
+
+                return ['taken_id'=>$item['id'],'service_id' => $item['service_id'], 'service_name'=>$item['service']['name'] , 'taken_at'=>$d2->toDateString() ,
+                    'amount' => empty($item['amount']) ?  $duration*$item['service']['rate'] : $item['amount'] ,
+                    'duration'=> $duration,'name'=>$user['name'],'photo'=>$account['photo'],'user_id'=>$user['account_id']];
+            });
             $response->success=true;
-            $response->data=$services;
-            $response->message="Services found";
-        }
-        else{
-            $response->success=false;
-            $response->data=null;
-            $response->message="Services not found";
-        }
-    }
-
-    /*************************************************************************************************/
-    /*Taker services*/
-
-    function scatter(){
-        $response=new \stdClass();
-
-        $accounts=Account::where('is_provider','1')->pluck('id')->get();
-        $services=Service::whereIn('account_id',$accounts)->get();
-
-        if($services){
-            $response->success=true;
-            $response->data=$services;
+            $response->data=$data;
             $response->message="Services found";
         }
         else{
@@ -211,35 +216,63 @@ class ServiceController extends Controller
         return response()->json($response);
     }
 
-    function byLocation($latitude,$longitude){
+    /*************************************************************************************************/
+    /*Taker services*/
+
+    function scatter(){
         $response=new \stdClass();
 
-        $lat=isset($latitude) ? $latitude : '';
-        $lon=isset($longitude) ? $longitude : '';
+        $accounts=Account::where('is_provider','1')->where('aadhaar_verified',1)->pluck('id')->toArray();
+        $services=Service::whereIn('account_id',$accounts)->get();
+
+        if($services){
+            $data = $services->map(function ($item) {
+                return ['account_id'=>$item['account_id'],'service_id'=>$item['id'],'name'=>$item['name'],'latitude'=>$item['latitude'],'longitude'=>$item['longitude']];
+            });
+
+            $response->success=true;
+            $response->data=$data;
+            $response->message="Services found";
+        }
+        else{
+            $response->success=false;
+            $response->data=null;
+            $response->message="Services not found";
+        }
+
+        return response()->json($response);
+    }
+    function t1($val, $min, $max) {
+        return ($val >= $min && $val <= $max);
+    }
+
+    function byLocation(Request $request){
+        $response=new \stdClass();
+
+        $lat=isset($request->latitude) ? $request->latitude : '';
+        $lon=isset($request->longitude) ? $request->longitude : '';
 
         if(!empty($lat) && !empty($lon)){
 
-            $radius = 1; // Km
-
-            $angle_radius = $radius / ( 111 * cos( $lat ) ); // Every lat|lon degree° is ~ 111Km
-            $min_lat = $lat - $angle_radius;
-            $max_lat = $lat + $angle_radius;
-            $min_lon = $lon - $angle_radius;
-            $max_lon = $lon + $angle_radius;
-
-            $results=Account::whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->where('is_provider','1')->get();
+            $radius = !empty($rad) ? $rad : 1; // Km
+            $min_lon = $lon-$radius/(cos(deg2rad($lat)));
+            $max_lon=  $lon+$radius/(cos(deg2rad($lat)));
+            $min_lat = $lat-($radius);
+            $max_lat = $lat+($radius);
+            $results=Service::whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->get();
             $n_rows = count( $results);
             for($i=0; $i<$n_rows; $i++) {
                 if($this->getDistanceBetweenPointsNew($lat, $lon, $results[$i]->latitude, $results[$i]->longitude, 'Km') > $radius) {
-                    // This is out of the "perfect" circle radius. Strip it out.
                     unset($results[$i]);
                 }
             }
 
-            $ids=$results->pluck('id')->toArray();
-            $services=Service::whereIn('account_id',$ids)->where('is_active','1')->get();
+            $data = $results->map(function ($item) {
+                return ['account_id'=>$item['account_id'],'service_id'=>$item['id'],'name'=>$item['name'],'latitude'=>$item['latitude'],'longitude'=>$item['longitude']];
+            });
+
             $response->success=true;
-            $response->data=$services;
+            $response->data=$data;
             $response->message="Service found";
         }
         else{
@@ -254,34 +287,31 @@ class ServiceController extends Controller
     function search(Request $request){
         $response=new \stdClass();
 
-        $user_id=$log['account_id']=isset($user_id) ? $user_id : '';//optional
-        $name=$log['name']=isset($request->service) ? $request->service : '';
+        $user_id=$log['account_id']=isset($request->user_id) ? $request->user_id : '';//optional
+        $name=$log['name']=isset($request->name) ? $request->name : '';
         $latitude=isset($request->latitude) ? $request->latitude : '';//optional
         $longitude=isset($request->longitude) ? $request->longitude : '';//optional
         $rad=$log['radius']=isset($request->radius) ? $request->radius: 1;
 
         if(empty($name)){
             $response->success=false;
-            $response->data=array();
+            $response->data=null;
             $response->message="No search paramter found";
             return response()->json($response);
         }
 
         if(empty($user_id)){
             $response->success=false;
-            $response->data=array();
-            $response->message="Unable to find the services";
-            return response()->json($response,$http);
+            $response->data=null;
+            $response->message="Invalid user";
+            return response()->json($response);
         }
 
-        $location=$this->getUserLocation($user_id);
         if(empty($latitude) && empty($longitude)){
-            $lat=$log['latitude']=$location->latitude;
-            $lon=$log['longitude']=$location->longitude;
-        }
-        else{
-            $lat=$log['latitude']=$latitude;
-            $lon=$log['longitude']=$longitude;
+            $response->success=false;
+            $response->data=null;
+            $response->message="Coordinates are required";
+            return response()->json($response);
         }
 
         /*Add search logs*/
@@ -358,15 +388,35 @@ class ServiceController extends Controller
         }
 
         $service=Service::with('account.user')->where('id',$service_id)->first();
-        $account=$service->account;
-        $cord=$this->getUserLocation($user_id);
+        if(!$service){
+            $response->success=false;
+            $response->data=null;
+            $response->message="Service not found";
+            return response()->json($response);
+        }
 
-        $distance=$this->getDistanceBetweenPointsNew($cord->latitude, $cord->longitude, $account->latitude, $account->longitude, $unit = 'Km');
+        $account=$service->account;
+        $cord=Account::find($user_id);
+
+        $distance=$this->getDistanceBetweenPointsNew($cord->latitude, $cord->longitude, $account->latitude, $account->longitude, $unit = 'm');
 
         if($service && $cord){
             $comments=Comments::where('provider_id',$service->account_id)->get();
-            $total = $comments->sum('ratings');
-            $rating=number_format(floatval($total) / count($comments),1);
+
+           if(count($comments) == 0){
+              $rating=0;
+           }
+           else{
+               $total = $comments->sum('ratings');
+               $rating=number_format(floatval($total) / count($comments),1);
+           }
+
+           if($distance > 1000){
+               $distance=($distance/1000). " km";
+           }
+           else{
+               $distance=$distance. " m";
+           }
             $data=array(
                 'provider'=>$service->account->user->name,
                 'rate'=>$service->rate,
@@ -375,7 +425,7 @@ class ServiceController extends Controller
                 'service_id'=>$service->id,
                 'address'=>$this->formattedAddress($account->address,$account->city,$account->state,$account->country,$account->zip),
                 'ratings'=>$rating,
-                'distance'=>$distance." Km"
+                'distance'=>$distance
             );
 
             $response->success=true;
@@ -397,6 +447,26 @@ class ServiceController extends Controller
 
         $validator=Validator::make($data,ServiceTaken::$rules['create']);
         if($validator->passes()){
+            $user=User::with('account')->find($request->user_id);
+            if($user){
+                if($user->mobile_verified==0){
+                    $response->success=false;
+                    $response->message="Verify your mobile number";
+                    return response()->json($response);
+                }
+                elseif($user->account->aadhaar_verified==0){
+                    $response->success=false;
+                    $response->message="Verify your aadhaar";
+                    return response()->json($response);
+                }
+            }
+            else{
+                $response->success=false;
+                $response->message="User not found";
+                return response()->json($response);
+            }
+
+
             $taken=ServiceTaken::create($data);
             if($taken){
                 /*Trigger Mail*/
@@ -412,6 +482,8 @@ class ServiceController extends Controller
             $response->success=false;
             $response->message=$validator->errors()->first();
         }
+
+        return response()->json($response);
     }
 
     function cancelTakenService($taken_id,$is_provider){
@@ -509,7 +581,7 @@ class ServiceController extends Controller
 
     /*Common functions*/
 
-    function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longitude2, $unit = 'Km')
+    function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longitude2, $unit = 'm')
     {
         $theta = $longitude1 - $longitude2;
         $distance = (sin(deg2rad($latitude1)) * sin(deg2rad($latitude2))+
@@ -521,6 +593,7 @@ class ServiceController extends Controller
         {
             case 'Mi': break;
             case 'Km' : $distance = $distance * 1.609344;
+            case 'm' : $distance = $distance * 1.609344 * 1000;
         }
         return (round($distance,2));
     }

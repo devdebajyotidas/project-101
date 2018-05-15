@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Service extends Model
 {
     use SoftDeletes;
+    protected  $table='services';
 
     protected $fillable=[
         'account_id',
@@ -39,6 +40,12 @@ class Service extends Model
         return $this->belongsTo('App\Models\Account');
 
     }
+
+    public function serviceTaken()
+    {
+        return $this->hasMany('App\Models\ServiceTaken','service_id','id');
+    }
+
 
 //    public function comment()
 //    {
