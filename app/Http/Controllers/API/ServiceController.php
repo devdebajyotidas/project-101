@@ -57,7 +57,7 @@ class ServiceController extends Controller
         $service=Service::find($service_id);
 
         if($service){
-            $data['name']=$service->name;
+            $data['area']=$service->area;
             $data['rate']=$service->rate;
             $data['service_id']=$service->id;
 

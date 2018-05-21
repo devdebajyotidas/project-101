@@ -29,8 +29,10 @@ class Service extends Model
             'longitude' => 'required',
         ],
         "update" => [
-            'name' => 'required',
             'rate'=>'required',
+            'latitude'=>'required',
+            'longitude'=>'required',
+            'area'=>'required',
         ],
 
     ];
