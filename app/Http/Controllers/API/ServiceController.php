@@ -198,10 +198,22 @@ class ServiceController extends Controller
                 $duration=($interval->days * 24) + $interval->h;
                 $account=$item['account'][0];
                 $user=$account['user'];
+                if(empty($item['completed_at']) && empty($item['deleted_at'])){
+                    $progress='Ongoing';
+                }
+                elseif(empty($item['completed_at']) && !empty($item['deleted_at'])){
+                    $progress='Cancelled';
+                }
+                elseif(!empty($item['completed_at']) && empty($item['deleted_at'])){
+                    $progress='Completed';
+                }
+                else{
+                    $progress='Unknown';
+                }
 
                 return ['taken_id'=>$item['id'],'service_id' => $item['service_id'], 'service_name'=>$item['service']['name'] , 'taken_at'=>$d2->toDateString() ,
                     'amount' => empty($item['amount']) ?  $duration*$item['service']['rate'] : $item['amount'] ,
-                    'duration'=> $duration,'name'=>$user['name'],'photo'=>$account['photo'],'user_id'=>$user['account_id']];
+                    'duration'=> $duration,'name'=>$user['name'],'photo'=>$account['photo'],'user_id'=>$user['account_id'],'progress'=>$progress ];
             });
             $response->success=true;
             $response->data=$data;

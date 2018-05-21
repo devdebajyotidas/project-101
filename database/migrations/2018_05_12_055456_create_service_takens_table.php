@@ -20,6 +20,7 @@ class CreateServiceTakensTable extends Migration
             $table->integer('user_id');
             $table->double('amount')->nullable();
             $table->dateTime('completed_at')->nullable();
+            $table->tinyInteger('is_cancelled')->default(0);
             $table->timestamps();
         });
     }
