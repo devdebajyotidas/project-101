@@ -11,4 +11,6 @@ class AdminService extends Model
         'image',
         'is_active'
     ];
+
+
 }

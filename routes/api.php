@@ -51,19 +51,19 @@ Route::group(['namespace' => 'API'], function () {
     Route::get('timeline/{account_id}', 'ServiceController@timeline');
 
     /*Service Taker*/
-    Route::get('service/taker/scatter', 'ServiceController@scatter');
-    Route::post('service/taker/location', 'ServiceController@byLocation'); //lat,longi post
+    Route::get('service/taker/load', 'ServiceController@scatter');
+    Route::post('service/taker/location', 'ServiceController@byLocation'); //lat,longi,radius post
     Route::post('service/taker/search', 'ServiceController@search');
-    Route::get('service/taker/bubble/{user_id}/{service_id}', 'ServiceController@bubble');
+    Route::get('service/taker/show/{user_id}/{service_id}', 'ServiceController@bubble');
     Route::post('service/taker/take', 'ServiceController@takeService');
 
     Route::delete('service/cancel/{taken_id}/{is_provider}', 'ServiceController@cancelTakenService');
-    Route::post('service/done/{taken_id}', 'ServiceController@done');
+    Route::get('service/done/{taken_id}', 'ServiceController@done');
 
     /*Comments & Ratings*/
     Route::get('comment/{account_id}', 'CommentController@index');
     Route::post('comment', 'CommentController@store');
     Route::put('comment/{comment_id}', 'CommentController@update');
-    Route::post('comment/approve/{comment_id}', 'CommentController@approve');
+    Route::get('comment/approve/{comment_id}', 'CommentController@approve');
 
 });

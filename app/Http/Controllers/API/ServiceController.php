@@ -260,6 +260,7 @@ class ServiceController extends Controller
 
         $lat=isset($request->latitude) ? $request->latitude : '';
         $lon=isset($request->longitude) ? $request->longitude : '';
+        $rad=$request->get('radius');
 
         if(!empty($lat) && !empty($lon)){
 

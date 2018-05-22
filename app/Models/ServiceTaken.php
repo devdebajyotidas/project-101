@@ -18,6 +18,7 @@ class ServiceTaken extends Model
         "create" => [
             'service_id' => 'required',
             'user_id'=>'required',
+            'provider_id'=>'required'
         ]
     ];
 
