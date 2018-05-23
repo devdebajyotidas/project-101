@@ -28,7 +28,7 @@ class Account extends Model implements AuditableContract
         'is_provider',
         'language',
         'aadhaar_verified',
-        'is_blocked'
+        'is_blocked',
     ];
 
     public function user()

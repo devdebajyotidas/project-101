@@ -30,7 +30,8 @@ class User extends Authenticatable implements AuditableContract
         'verification_token',
         'mobile_verified',
         'email_verified',
-        'fcm_token'
+        'fcm_token',
+        'is_employee'
     ];
 
     /**

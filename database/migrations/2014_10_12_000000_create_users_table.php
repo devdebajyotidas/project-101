@@ -26,6 +26,7 @@ class CreateUsersTable extends Migration
             $table->string('verification_token', 60)->nullable();
             $table->tinyInteger('mobile_verified')->default('0');
             $table->tinyInteger('email_verified')->default('0');
+            $table->tinyInteger('is_employee')->default('0');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
