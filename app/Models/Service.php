@@ -12,7 +12,7 @@ class Service extends Model
 
     protected $fillable=[
         'account_id',
-        'name',
+        'service_id',
         'rate',
         'latitude',
         'longitude',
@@ -22,7 +22,7 @@ class Service extends Model
 
     public static $rules = [
         "create" => [
-            'name' => 'required',
+            'service_id' => 'required',
             'rate'=>'required',
             'area' => 'required',
             'latitude' => 'required',
@@ -48,6 +48,11 @@ class Service extends Model
         return $this->hasMany('App\Models\ServiceTaken','service_id','id');
     }
 
+    public function adminService(){
+
+        return $this->belongsTo('App\Models\AdminService');
+
+    }
 
 //    public function comment()
 //    {

@@ -16,7 +16,8 @@ class CreateShoutsTable extends Migration
         Schema::create('shouts', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('area')->nullable();
+            $table->string('latitude')->nullable();
+            $table->string('longitude')->nullable();
             $table->integer('service_id');
             $table->integer('taken_by');
             $table->tinyInteger('is_complete')->default(0);

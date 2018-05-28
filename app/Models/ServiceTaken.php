@@ -33,4 +33,10 @@ class ServiceTaken extends Model
         return $this->belongsTo('App\Models\Service');
 
     }
+
+    public function adminService(){
+
+        return $this->belongsTo('App\Models\AdminService');
+
+    }
 }

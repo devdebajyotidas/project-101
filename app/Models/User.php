@@ -78,6 +78,11 @@ class User extends Authenticatable implements AuditableContract
         return $this->morphTo('account');
     }
 
+//    public function employee()
+//    {
+//        return $this->morphTo('employee');
+//    }
+
     public static function resolveId()
     {
         return Auth::check() ? Auth::user()->getAuthIdentifier() : null;
