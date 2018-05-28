@@ -9,8 +9,7 @@ class Shout extends Model
     protected  $fillable=[
         'user_id',
         'service_id',
-        'latitude',
-        'longitude',
+        'area',
         'taken_by',
         'is_complete'
     ];
