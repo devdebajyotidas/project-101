@@ -44,11 +44,11 @@
         }
     </style>
     <div class="page">
-        {{dd(isset($shouts) ? $shouts : '')}}
+        {{--{{dd(isset($shouts) ? $shouts : '')}}--}}
         <div class="page-header">
             <div class="row">
                 <div class="col-md-3">
-                    <h1 class="page-title">Providers</h1>
+                    <h1 class="page-title">Shouts - <small class="grey-500 total-result-count">0</small></h1>
                 </div>
                 <div class="col-md-9">
                     <div class="row">
@@ -127,29 +127,8 @@
         </div>
         <div class="page-content container-fluid">
             <div class="row" id="shout-container">
-                <?php $imageurl=url('uploads').'/' ?>
-                <div  class="col-md-3 card-col">
-                    <div href="{{url('providers/profile').'/'}}" class="card card-shadow white">
-                        <div class="card-block p-20">
-                            <div class="avatar avatar-100 float-left mr-20" href="javascript:void(0)">
-                                <img src="{{$imageurl.'default-avatar.png'  }}" alt="">
-                            </div>
-                        </div>
-                        <div class="card-block h-170 text-dark">
-                            <h4 class="card-title">Samir Maikap</h4>
-                            <label>South dumdum, Kolkata - 700074</label>
-                            <label>Shouted for : <a href="">Plumber</a></label>
-                            <label>Taken by : Nobody</label>
-                            <p class="card-text">
-                                <small class="text-muted">3 days ago</small>
-                            </p>
-                        </div>
-                        {{--<div class="card-footer text-center">--}}
-                            {{--<button class="btn btn-inverse h-40 w-40 btn-round p-0 ml-10 mr-10  text-primary edit-service" title="Edit"><i style="line-height: 40px" class="material-icons">done_all</i></button>--}}
-                            {{--<button class="btn btn-inverse h-40 w-40 btn-round p-0 ml-10 mr-10  text-primary edit-service" title="Edit"><i style="line-height: 40px" class="material-icons">email</i></button>--}}
-                        {{--</div>--}}
-                    </div>
-                </div>
+                {{dd($shouts)}}
+               {!! isset($shouts) ? $shouts : 'No shouts found' !!}
             </div>
             <div class="row text-center more-button-container" style="display: none">
                 <div class="col-lg-12 text-center">
@@ -189,7 +168,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-pure reset-date" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary font-weight-500 text-uppercase" id="serviceSubmit">Apply</button>
+                    <button type="button" class="btn btn-primary font-weight-500 text-uppercase" id="dateApply">Apply</button>
                 </div>
             </div>
         </div>
@@ -198,6 +177,11 @@
 
     <script>
         window.onload=function(){
+
+            $(function(){
+                updateTotalCount();
+            })
+
             $('.input-daterange input').each(function() {
                 $(this).datepicker('clearDates');
             });
@@ -209,19 +193,19 @@
                 clearTimeout(timer);
                 if ($('#inputSearch').val) {
                     timer = setTimeout(function(){
-                        $('#service-container').empty();
+                        $('#shout-container').empty();
                         loadResult();
                     }, timeout);
                 }
             });
 
             $('input[type="radio"]').on('ifChecked', function(){
-                $('#service-container').empty();
+                $('#shout-container').empty();
                 loadResult();
             });
 
             $('input[type="checkbox"]').on('ifChanged',function(){
-                $('#service-container').empty();
+                $('#shout-container').empty();
                 loadResult();
             });
 
@@ -232,7 +216,14 @@
             $('.reset-date').click(function(){
                 $('.start-date').val('').trigger('change');
                 $('.end-date').val('').trigger('change');
+                $('#shout-container').empty();
+                loadResult();
             });
+
+            $('#dateApply').click(function(){
+                $('#shout-container').empty();
+                loadResult();
+            })
 
             function loadResult(){
                 NProgress.start();
@@ -248,8 +239,10 @@
                 var formdata="search="+search+"&sort="+sort+"&filter="+filter+"&start="+start_date+"&end="+end_date+"&offset="+offset;
                 $.post(url,formdata,function(response){
                     NProgress.done();
-                    $('#service-container').append(response);
+                    console.log(response);
+                    $('#shout-container').append(response);
                     updateTotalCount();
+                    showMoreButton();
                 }).fail(function(xhr){
                     console.log(xhr.responseText);
                 })
@@ -270,6 +263,7 @@
             function updateTotalCount(){
                 var last=$('.total-result:last').val();
                 $('#total_provider').val(last);
+                $('.total-result-count').html(last);
             }
         }
     </script>

@@ -34,6 +34,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::get('customer/{account_id}', 'CustomerController@show');
     Route::post('customer/load/result', 'CustomerController@search');
     Route::get('shouts', 'ShoutController@index');
+    Route::post('shouts/load/result', 'ShoutController@load');
     Route::get('payments', 'PaymentController@index');
     Route::get('feedback', 'FeedbackController@index');
     Route::get('reports', 'ReportsController@index');

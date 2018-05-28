@@ -48,6 +48,11 @@ class Account extends Model implements AuditableContract
 
     public function comments()
     {
-        return $this->hasMany('App\Models\Service','user_id','id');
+        return $this->hasMany('App\Models\Comments','user_id','id');
     }
+
+    public function shout(){
+        return $this->belongsTo('App\Models\Shout');
+    }
+
 }

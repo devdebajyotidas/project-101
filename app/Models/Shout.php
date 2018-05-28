@@ -6,21 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Shout extends Model
 {
+
     protected  $fillable=[
         'user_id',
         'service_id',
-        'latitude',
-        'longitude',
+        'area',
         'taken_by',
         'is_complete'
     ];
 
-    function account(){
+    function taker(){
 
+        return $this->hasMany('App\Models\Account','id','user_id');
     }
 
-    function service(){
+    function provider(){
+        return $this->hasMany('App\Models\Account','id','taken_by');
+    }
 
+    function adminService(){
+        return $this->hasMany('App\Models\AdminService','id','service_id');
     }
 
 }

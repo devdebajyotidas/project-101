@@ -54,9 +54,4 @@ class Service extends Model
 
     }
 
-//    public function comment()
-//    {
-//        return $this->hasMany('App\Models\Comments','provider_id','account_id');
-//    }
-
 }

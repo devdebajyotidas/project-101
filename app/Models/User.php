@@ -92,4 +92,8 @@ class User extends Authenticatable implements AuditableContract
     {
         return $this->hasMany('App\Models\Comments','user_id','account_id');
     }
+
+    function shout(){
+        return $this->belongsTo('App\Models\Shout');
+    }
 }

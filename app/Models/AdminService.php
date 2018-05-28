@@ -22,4 +22,10 @@ class AdminService extends Model
     {
         return $this->hasMany('App\Models\ServiceTaken','service_id','id');
     }
+
+    public function shout()
+    {
+        return $this->belongsTo('App\Models\Shout');
+    }
+
 }
