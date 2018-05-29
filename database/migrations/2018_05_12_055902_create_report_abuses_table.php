@@ -17,6 +17,7 @@ class CreateReportAbusesTable extends Migration
             $table->increments('id');
             $table->integer('account_id');
             $table->integer('user_id');
+            $table->integer('comment_id');
             $table->timestamps();
         });
     }

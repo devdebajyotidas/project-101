@@ -80,4 +80,34 @@ class CustomerController extends Controller
         $data['customers']=$result->skip($offset)->take(20)->get();
         return view('customers.card',$data);
     }
+
+    function block(Request $request,$account_id){
+        $response=new \stdClass();
+        $status=$request->get('status');
+        $value=($status=='block') ? 1 : 0;
+
+        if(empty($account_id)){
+            $response->status=false;
+            $response->message="Invalid account selection";
+            return response()->json($response);
+        }
+
+        $user=Account::find($account_id);
+        if($user){
+            $user->is_blocked=$value;
+            if($user->update()){
+                $response->status=true;
+                $response->message="Account has been ".$status.'ed';
+            }
+            else{
+                $response->status=false;
+                $response->message="Unable to perform request";
+            }
+        }
+        else{
+            $response->status=false;
+            $response->message="User not found";
+        }
+        return response()->json($response);
+    }
 }

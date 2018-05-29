@@ -19,7 +19,7 @@ class Comments extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-//    public function service(){
-//        return $this->belongsTo('App\Models\Service');
-//    }
+    public function feedback(){
+        return $this->belongsTo('App\Models\ReportAbuse');
+    }
 }

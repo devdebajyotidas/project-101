@@ -44,7 +44,6 @@
         }
     </style>
     <div class="page">
-        {{--{{dd(isset($shouts) ? $shouts : '')}}--}}
         <div class="page-header">
             <div class="row">
                 <div class="col-md-3">

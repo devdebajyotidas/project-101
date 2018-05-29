@@ -33,10 +33,13 @@ Route::group(['namespace' => 'Web'], function () {
     Route::get('customer', 'CustomerController@index');
     Route::get('customer/{account_id}', 'CustomerController@show');
     Route::post('customer/load/result', 'CustomerController@search');
+    Route::post('customer/{account_id}/block', 'CustomerController@block');
     Route::get('shouts', 'ShoutController@index');
     Route::post('shouts/load/result', 'ShoutController@load');
     Route::get('payments', 'PaymentController@index');
     Route::get('feedback', 'FeedbackController@index');
+    Route::post('feedback/load/result', 'FeedbackController@load');
+    Route::post('feedback/user/result', 'FeedbackController@load');
     Route::get('reports', 'ReportsController@index');
 
 });

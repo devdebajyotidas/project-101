@@ -55,4 +55,7 @@ class Account extends Model implements AuditableContract
         return $this->belongsTo('App\Models\Shout');
     }
 
+    public function reportAbuse(){
+        return $this->belongsTo('App\Models\ReportAbuse');
+    }
 }
