@@ -28,11 +28,11 @@
             <div class="card card-shadow white">
                 <div class="card-block p-20">
                     <div class="avatar avatar-100 avatar-square float-left mr-20" href="javascript:void(0)">
-                        <img src="{{$imageurl.$shout->adminservice[0]->image  }}" alt="">
+                        <img src="{{$imageurl.$shout->image  }}" alt="">
                     </div>
                 </div>
                 <div class="card-block h-170 text-dark">
-                    <h4 class="card-title">{{$shout->adminservice[0]->name}}</h4>
+                    <h4 class="card-title">{{$shout->name}}</h4>
                     <p>{{!empty($shout->area) ? $shout->area : 'Not available'}}</p>
                     <p>Shouted By : <a href="{{$shout_link}}">{{$shouted_by}}</a></p>
                     <p>Taken by : <a href="{{$taker_link}}">{{$taken_by}}</a></p>

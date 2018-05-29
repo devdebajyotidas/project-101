@@ -127,7 +127,6 @@
         </div>
         <div class="page-content container-fluid">
             <div class="row" id="shout-container">
-                {{dd($shouts)}}
                {!! isset($shouts) ? $shouts : 'No shouts found' !!}
             </div>
             <div class="row text-center more-button-container" style="display: none">

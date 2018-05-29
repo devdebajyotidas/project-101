@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Models\Account;
+use App\Models\AdminService;
 use App\Models\Shout;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -15,8 +17,9 @@ class ShoutController extends Controller
         $data['bodyClass']='';
         $request=new Request();
         $request->setMethod('POST');
-        $request->request->add(['search' => 'plum']);
+        $request->request->add(['sort' => 'name asc']);
         $data['shouts']=$this->load($request);
+//        dd($data['shouts']);
         return view('shouts.index',$data);
     }
 
@@ -46,29 +49,11 @@ class ShoutController extends Controller
             $sort_val='asc';
         }
 
+
+        $result=Shout::join('admin_services as ad','ad.id','=','shouts.service_id')->select(['shouts.*','ad.name','ad.image'])->with(['taker.user','provider.user']);
+
         if(!empty($search)){
-            if($sort_col=='name'){
-                $result=Shout::with(['adminService'=>function($query) use ($search,$sort_val,$sort_col){
-                    $query->where('name','LIKE',"%$search%")->orderBy('name',$sort_val);
-                },'taker.user','provider.user']);
-            }
-            else{
-                $result=Shout::with(['adminService'=>function($query) use ($search,$sort_val,$sort_col){
-                    $query->where('name','LIKE',"%$search%");
-                },'taker.user','provider.user'])->orderBy($sort_col,$sort_val);
-            }
-
-        }
-        else{
-            if($sort_col=='name'){
-                $result=Shout::with(['adminService'=>function($query) use ($sort_col,$sort_val){
-                    $query->orderBy('name',$sort_val);
-                },'taker.user','provider.user']);
-            }
-            else{
-                $result=Shout::with(['adminService','taker.user','provider.user'])->orderBy($sort_col,$sort_val);
-            }
-
+           $result=$result->where('name','LIKE',"%$search%");
         }
 
         if(!empty($filter)){
@@ -81,12 +66,11 @@ class ShoutController extends Controller
         }
 
         if(!empty($start) && !empty($end)){
-            $result=$result->whereBetween('created_at', [$start, $end]);
+            $result=$result->whereBetween('shouts.created_at', [$start, $end]);
         }
 
         $data['total_result']=$result->count();
-        $data['shouts']=$result->skip($offset)->take(20)->get();
-//        return $data['shouts'];
+        $data['shouts']=$result->orderBy($sort_col,$sort_val)->skip($offset)->take(20)->get();
         return view('shouts.card',$data);
     }
 }
