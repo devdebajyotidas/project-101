@@ -18,6 +18,7 @@ class AdminService extends Model
     {
         return $this->hasMany('App\Models\Service','service_id','id');
     }
+
     public function serviceTaken()
     {
         return $this->hasMany('App\Models\ServiceTaken','service_id','id');

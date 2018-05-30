@@ -42,6 +42,8 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('profile/{account_id}/verify/email', 'AccountController@verifyEmail');
     Route::post('profile/{account_id}/verify/aadhaar', 'AccountController@verifyAadhaar'); //incomplete
 
+    Route::get('service/all/list','ServiceController@serviceList');
+
     /*Service Provider*/
     Route::get('service/{account_id}', 'ServiceController@index');
     Route::get('service/show/{service_id}', 'ServiceController@show');

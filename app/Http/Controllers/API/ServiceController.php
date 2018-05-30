@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Account;
+use App\Models\AdminService;
 use App\Models\Comments;
 use App\Models\SearchLog;
 use App\Models\Service;
@@ -27,7 +28,7 @@ class ServiceController extends Controller
             return response()->json($response);
         }
 
-        $services=Service::where('account_id',$account_id)->get();
+        $services=Service::with('adminService')->where('account_id',$account_id)->get();
 
         if($services){
             $response->success=true;
@@ -54,7 +55,7 @@ class ServiceController extends Controller
             return response()->json($response);
         }
 
-        $service=Service::find($service_id);
+        $service=Service::with('adminService')->find($service_id);
 
         if($service){
             $data['area']=$service->area;
@@ -187,7 +188,7 @@ class ServiceController extends Controller
             return response()->json($response);
         }
 
-        $services=ServiceTaken::with('service','account.user')->get();
+        $services=ServiceTaken::with('service.adminService','account.user')->get();
 
         if($services){
             $data = $services->map(function ($item) {
@@ -235,7 +236,7 @@ class ServiceController extends Controller
         $response=new \stdClass();
 
         $accounts=Account::where('is_provider','1')->where('aadhaar_verified',1)->pluck('id')->toArray();
-        $services=Service::whereIn('account_id',$accounts)->get();
+        $services=Service::with('adminService')->whereIn('account_id',$accounts)->get();
 
         if($services){
             $data = $services->map(function ($item) {
@@ -269,10 +270,13 @@ class ServiceController extends Controller
             $max_lon=  $lon+$radius/(cos(deg2rad($lat)));
             $min_lat = $lat-($radius);
             $max_lat = $lat+($radius);
-            $results=Service::whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->get();
+
+            $results=Service::with('adminService')->whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->get();
+
             $n_rows = count( $results);
             for($i=0; $i<$n_rows; $i++) {
-                if($this->getDistanceBetweenPointsNew($lat, $lon, $results[$i]->latitude, $results[$i]->longitude, 'Km') > $radius) {
+                $insearch=$this->getDistanceBetweenPointsNew($lat, $lon, $results[$i]->latitude, $results[$i]->longitude);
+                if( $insearch > $radius) {
                     unset($results[$i]);
                 }
             }
@@ -299,8 +303,8 @@ class ServiceController extends Controller
 
         $user_id=$log['account_id']=isset($request->user_id) ? $request->user_id : '';//optional
         $name=$log['name']=isset($request->name) ? $request->name : '';
-        $latitude=isset($request->latitude) ? $request->latitude : '';//optional
-        $longitude=isset($request->longitude) ? $request->longitude : '';//optional
+        $lat=$latitude=isset($request->latitude) ? $request->latitude : '';//optional
+        $lon=$longitude=isset($request->longitude) ? $request->longitude : '';//optional
         $rad=$log['radius']=isset($request->radius) ? $request->radius: 1;
 
         if(empty($name)){
@@ -317,18 +321,14 @@ class ServiceController extends Controller
             return response()->json($response);
         }
 
-        if(empty($latitude) && empty($longitude)){
-            $response->success=false;
-            $response->data=null;
-            $response->message="Coordinates are required";
-            return response()->json($response);
-        }
-
         /*Add search logs*/
         SearchLog::create($log);
 
-        if(!empty($lat) && !empty($lon)){
-
+        if(empty($lat) || empty($lon)){
+            $adminservice=AdminService::where('name','LIKE',"%{$name}%")->pluck('id');
+            $results=Service::with(['adminService','account'])->where('service_id',$adminservice)->get();
+        }
+        else{
             $radius = !empty($rad) ? $rad : 1; // Km
 
             $min_lon = $lon-$radius/(cos(deg2rad($lat)));
@@ -336,24 +336,26 @@ class ServiceController extends Controller
             $min_lat = $lat-($radius);
             $max_lat = $lat+($radius);
 
-            $results=Account::whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->where('is_provider','1')->get();
+            $adminservice=AdminService::where('name','LIKE',"%{$name}%")->pluck('id');
+
+            $results=Service::with(['adminService','account'])->where('service_id',$adminservice)->whereBetween('longitude', array($min_lon, $max_lon))->whereBetween('latitude', array($min_lat, $max_lat))->get();
             $n_rows = count( $results);
             for($i=0; $i<$n_rows; $i++) {
                 if($this->getDistanceBetweenPointsNew($lat, $lon, $results[$i]->latitude, $results[$i]->longitude, 'Km') > $radius) {
                     unset($results[$i]);
                 }
             }
+        }
 
-            $ids=$results->pluck('id')->toArray();
-            $services=Service::with('account')->whereIn('account_id',$ids)->where('name','LIKE',"%{$name}%")->get();
-
+        if(!empty($results)){
             $info=[];
-            foreach ($services as $key=>$service) {
+            foreach ($results as $key=>$service) {
                 $info[$key]['provider_id'] = $service->account_id;
-                $info[$key]['service_id'] = $service->id;
-                $info[$key]['name'] = $service->name;
-                $info[$key]['latitude'] = $service->account->latitude;
-                $info[$key]['longitude'] = $service->account->longitude;
+                $info[$key]['service_id'] = $service->service_id;
+                $info[$key]['name'] = $service->adminservice->name;
+                $info[$key]['image'] = $service->adminservice->image;
+                $info[$key]['latitude'] = $service->latitude;
+                $info[$key]['longitude'] = $service->longitude;
             }
 
             $response->success=true;
@@ -361,22 +363,10 @@ class ServiceController extends Controller
             $response->message="Service found";
         }
         else{
-            $services=Service::with('account')->where('name','LIKE',"%{$name}%")->get();
-
-            $info=[];
-            foreach ($services as $key=>$service) {
-                $info[$key]['provider_id'] = $service->account_id;
-                $info[$key]['service_id'] = $service->id;
-                $info[$key]['name'] = $service->name;
-                $info[$key]['latitude'] = $service->account->latitude;
-                $info[$key]['longitude'] = $service->account->longitude;
-            }
-
             $response->success=true;
-            $response->data=$info;
-            $response->message="Service found";
+            $response->data=null;
+            $response->message="No service found";
         }
-
         return response()->json($response);
     }
 
@@ -397,7 +387,7 @@ class ServiceController extends Controller
             return response()->json($response);
         }
 
-        $service=Service::with('account.user')->where('id',$service_id)->first();
+        $service=Service::with(['adminService','account.user'])->where('id',$service_id)->first();
         if(!$service){
             $response->success=false;
             $response->data=null;
@@ -591,21 +581,14 @@ class ServiceController extends Controller
 
     /*Common functions*/
 
-    function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longitude2, $unit = 'm')
+    function getDistanceBetweenPointsNew($latitude1, $longitude1, $latitude2, $longitude2, $unit = 'Km')
     {
         $theta = $longitude1 - $longitude2;
         $distance = (sin(deg2rad($latitude1)) * sin(deg2rad($latitude2))+
             (cos(deg2rad($latitude1)) * cos(deg2rad($latitude2)) * cos(deg2rad($theta))));
         $distance = acos($distance); $distance = rad2deg($distance);
         $distance = $distance * 60 * 1.1515;
-
-        switch($unit)
-        {
-            case 'Mi': break;
-            case 'Km' : $distance = $distance * 1.609344;
-            case 'm' : $distance = $distance * 1.609344 * 1000;
-        }
-        return (round($distance,2));
+        return (round($distance * 1.609344,2));
     }
 
     function formattedAddress($address,$city,$state,$country,$zip){
@@ -627,5 +610,10 @@ class ServiceController extends Controller
             $formatted.=', '.$zip;
 
         return ltrim(preg_replace('/,/', '', $formatted, 1));
+    }
+
+    function serviceList(){
+        $services=AdminService::withCount('service as available')->get();
+        return response()->json($services);
     }
 }
