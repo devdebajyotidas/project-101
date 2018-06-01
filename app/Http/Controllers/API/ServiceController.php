@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use DateTime;
@@ -282,7 +283,8 @@ class ServiceController extends Controller
             }
 
             $data = $results->map(function ($item) {
-                return ['account_id'=>$item['account_id'],'service_id'=>$item['id'],'name'=>$item['name'],'latitude'=>$item['latitude'],'longitude'=>$item['longitude']];
+                $collect=new Collection(['account_id'=>$item['account_id'],'service_id'=>$item['id'],'name'=>$item['name'],'latitude'=>$item['latitude'],'longitude'=>$item['longitude']]);
+                return $collect;
             });
 
             $response->success=true;

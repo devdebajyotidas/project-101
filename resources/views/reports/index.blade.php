@@ -10,12 +10,11 @@
                                 <div class="grey-800 float-left py-10">
                                     <i class="icon md-account grey-600 font-size-24 vertical-align-bottom mr-5"></i>                    User
                                 </div>
-                                <span class="float-right grey-700 font-size-30">1,253</span>
+                                <span class="float-right blue-500 font-size-30 font-weight-500">1,253</span>
                             </div>
-                            <div class="mb-20 grey-500">
-                                <i class="icon md-long-arrow-up green-500 font-size-16"></i>                  15% From this yesterday
+                            <div class="grey-500">
+                                <i class="icon md-long-arrow-up green-500 font-size-16 mr-5"></i>15% From this yesterday
                             </div>
-                            <div class="ct-chart h-50"></div>
                         </div>
                     </div>
                     <!-- End Widget Linearea One -->
@@ -26,14 +25,13 @@
                         <div class="card-block p-20 pt-10">
                             <div class="clearfix">
                                 <div class="grey-800 float-left py-10">
-                                    <i class="icon md-flash grey-600 font-size-24 vertical-align-bottom mr-5"></i>                    VISITS
+                                    <i class="icon material-icons grey-600 font-size-24 vertical-align-middle mr-5">person</i>Customers
                                 </div>
-                                <span class="float-right grey-700 font-size-30">2,425</span>
+                                <span class="float-right blue-500 font-size-30 font-weight-500">2,425</span>
                             </div>
-                            <div class="mb-20 grey-500">
-                                <i class="icon md-long-arrow-up green-500 font-size-16"></i>                  34.2% From this week
+                            <div class="grey-500">
+                                <i class="icon md-long-arrow-up green-500 font-size-16 mr-5"></i>34.2% From this week
                             </div>
-                            <div class="ct-chart h-50"></div>
                         </div>
                     </div>
                     <!-- End Widget Linearea Two -->
@@ -44,14 +42,13 @@
                         <div class="card-block p-20 pt-10">
                             <div class="clearfix">
                                 <div class="grey-800 float-left py-10">
-                                    <i class="icon md-chart grey-600 font-size-24 vertical-align-bottom mr-5"></i>                    Total Clicks
+                                    <i class="icon material-icons grey-600 font-size-24 vertical-align-middle mr-5">person_pin</i>Vendors
                                 </div>
-                                <span class="float-right grey-700 font-size-30">1,864</span>
+                                <span class="float-right blue-500 font-size-30 font-weight-500">1,864</span>
                             </div>
-                            <div class="mb-20 grey-500">
-                                <i class="icon md-long-arrow-down red-500 font-size-16"></i>                  15% From this yesterday
+                            <div class="grey-500">
+                                <i class="icon md-long-arrow-down red-500 font-size-16 mr-5"></i>15% From this yesterday
                             </div>
-                            <div class="ct-chart h-50"></div>
                         </div>
                     </div>
                     <!-- End Widget Linearea Three -->
@@ -62,14 +59,13 @@
                         <div class="card-block p-20 pt-10">
                             <div class="clearfix">
                                 <div class="grey-800 float-left py-10">
-                                    <i class="icon md-view-list grey-600 font-size-24 vertical-align-bottom mr-5"></i>                    Items
+                                    <i class="icon material-icons grey-600 font-size-24 vertical-align-middle mr-5 ">beenhere</i>Service Taken
                                 </div>
-                                <span class="float-right grey-700 font-size-30">845</span>
+                                <span class="float-right blue-500 font-size-30 font-weight-500">845</span>
                             </div>
-                            <div class="mb-20 grey-500">
-                                <i class="icon md-long-arrow-up green-500 font-size-16"></i>                  18.4% From this yesterday
+                            <div class="grey-500">
+                                <i class="icon md-long-arrow-up green-500 font-size-16 vertical-align-middle mr-5"></i>18.4% This Month
                             </div>
-                            <div class="ct-chart h-50"></div>
                         </div>
                     </div>
                     <!-- End Widget Linearea Four -->
@@ -77,12 +73,12 @@
 
                 <div class="col-lg-6">
                     <!-- Example Curve -->
-                    <div class="example-wrap m-md-0">
-                        <h4 class="example-title">Curve</h4>
-                        <div class="example example-responsive">
-                            <div class="width-sm-400" id="exampleFlotCurve"></div>
-                        </div>
-                    </div>
+                    {{--<div class="example-wrap m-md-0">--}}
+                        {{--<h4 class="example-title">Curve</h4>--}}
+                        {{--<div class="example example-responsive">--}}
+                            {{--<div class="width-sm-400" id="exampleFlotCurve"></div>--}}
+                        {{--</div>--}}
+                    {{--</div>--}}
                     <!-- End Example Curve -->
                 </div>
 
