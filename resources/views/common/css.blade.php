@@ -41,17 +41,12 @@
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/pages/profile-v2.css">
     @elseif($page=='employee profile')
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/pages/profile_v3.css">
-@elseif($page=='provider' || $page=='customer' || $page=='service')
-
 @elseif($page=='payment')
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/widgets/social.css">
 @elseif($page=='report')
-    <link rel="stylesheet" href="{{url('global')}}/vendor/chartist/chartist.css">
-    <link rel="stylesheet" href="{{url('global')}}/vendor/jvectormap/jquery-jvectormap.css">
-    <link rel="stylesheet" href="{{url('global')}}/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.css">
-    <link rel="stylesheet" href="{{url('assets')}}/examples/css/dashboard/v1.css">
-    <link rel="stylesheet" href={{url('assets')}}/examples/css/charts/flot.css">
+    <link rel="stylesheet" href="{{url('assets')}}/examples/css/charts/chartjs.css">
+    <link rel="stylesheet" href="{{url('global')}}/vendor/bootstrap-datepicker/bootstrap-datepicker.css">
  @elseif($page=='shout')
-    <link rel="stylesheet" href="../../../global/vendor/bootstrap-datepicker/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="{{url('global')}}/vendor/bootstrap-datepicker/bootstrap-datepicker.css">
 @endif
 

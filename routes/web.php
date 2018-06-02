@@ -41,5 +41,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('feedback/load/result', 'FeedbackController@load');
     Route::post('feedback/user/result', 'FeedbackController@load');
     Route::get('reports', 'ReportsController@index');
-
+    Route::post('reports/load/service', 'ReportsController@serviceHistory');
+    Route::post('reports/load/customer', 'ReportsController@customerHistory');
+    Route::post('reports/load/vendor', 'ReportsController@vendorHistory');
 });

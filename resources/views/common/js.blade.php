@@ -58,8 +58,8 @@
 <script src="{{url('global')}}/vendor/icheck/icheck.min.js"></script>
 <script src="{{url('global')}}/js/Plugin/icheck.js"></script>
 {{--Extended Js--}}
-<script src="../../../global/vendor/alertify/alertify.js"></script>
-<script src="../../../global/js/Plugin/alertify.js"></script>
+<script src="{{url('global')}}/vendor/alertify/alertify.js"></script>
+<script src="{{url('global')}}/js/Plugin/alertify.js"></script>
 
 
 @if($page=='home')
@@ -70,30 +70,20 @@
 @elseif($page=='provider' || $page=='customer' || $page=='service')
     {{----}}
 @elseif($page=='shout')
-    <script src="../../../global/vendor/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-    <script src="../../../global/vendor/datepair/datepair.min.js"></script>
-    <script src="../../../global/vendor/datepair/jquery.datepair.min.js"></script>
-    <script src="../../../global/js/Plugin/datepair.js"></script>
-    <script src="../../../global/js/Plugin/bootstrap-datepicker.js"></script>
+    <script src="{{url('global')}}/vendor/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="{{url('global')}}/vendor/datepair/datepair.min.js"></script>
+    <script src="{{url('global')}}/vendor/datepair/jquery.datepair.min.js"></script>
+    <script src="{{url('global')}}/js/Plugin/datepair.js"></script>
+    <script src="{{url('global')}}/js/Plugin/bootstrap-datepicker.js"></script>
 @elseif($page=='report')
-    <script src="{{url('global')}}/vendor/chartist/chartist.min.js"></script>
-    <script src="{{url('global')}}/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.js"></script>
-    <script src="{{url('global')}}/vendor/jvectormap/jquery-jvectormap.min.js"></script>
-    <script src="{{url('global')}}/vendor/jvectormap/maps/jquery-jvectormap-world-mill-en.js"></script>
-    <script src="{{url('global')}}/vendor/matchheight/jquery.matchHeight-min.js"></script>
-    <script src="{{url('global')}}/vendor/peity/jquery.peity.min.js"></script>
-    <script src="{{url('global')}}/js/Plugin/matchheight.js"></script>
-    <script src="{{url('global')}}/js/Plugin/jvectormap.js"></script>
-    <script src="{{url('global')}}/js/Plugin/peity.js"></script>
-    <script src="{{url('assets')}}/examples/js/dashboard/v1.js"></script>
-    <script src="{{url('global')}}/vendor/flot/jquery.flot.js"></script>
-    <script src="{{url('global')}}/vendor/flot/jquery.flot.resize.js"></script>
-    <script src="{{url('global')}}/vendor/flot/jquery.flot.time.js"></script>
-    <script src="{{url('global')}}/vendor/flot/jquery.flot.stack.js"></script>
-    <script src="{{url('global')}}/vendor/flot/jquery.flot.pie.js"></script>
-    <script src="{{url('global')}}/vendor/flot/jquery.flot.selection.js"></script>
-    <script src="{{url('assets')}}/examples/js/charts/flot.js"></script>
-
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+    <script src="{{url('global')}}/vendor/chart-js/Chart.js"></script>
+    <script src="{{url('/js/utils.js')}}"></script>
+    <script src="{{url('global')}}/vendor/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="{{url('global')}}/vendor/datepair/datepair.min.js"></script>
+    <script src="{{url('global')}}/vendor/datepair/jquery.datepair.min.js"></script>
+    <script src="{{url('global')}}/js/Plugin/datepair.js"></script>
+    <script src="{{url('global')}}/js/Plugin/bootstrap-datepicker.js"></script>
 @endif
 
 <script>
