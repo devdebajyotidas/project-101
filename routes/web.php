@@ -44,4 +44,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('reports/load/service', 'ReportsController@serviceHistory');
     Route::post('reports/load/customer', 'ReportsController@customerHistory');
     Route::post('reports/load/vendor', 'ReportsController@vendorHistory');
+    Route::get('reports/service/{service_id}', 'ReportsController@serviceReport');
+    Route::post('reports/load/service/usage/{service_id}', 'ReportsController@serviceUsage');
+    Route::post('reports/load/service/taken/{service_id}', 'ReportsController@serviceTaken');
 });
