@@ -21,6 +21,14 @@ Route::group(['namespace' => 'Web'], function () {
     Route::get('logout', 'Auth\LoginController@logout');
     Route::get('home', 'HomeController@home');
     Route::get('profile', 'HomeController@profile');
+
+    Route::get('employees', 'EmployeeController@index');
+    Route::post('employees/load/result', 'EmployeeController@load');
+    Route::post('employees/invite', 'EmployeeController@invite');
+    Route::post('employees/update', 'EmployeeController@update');
+    Route::get('employees/invitation/{token}', 'EmployeeController@show');
+    Route::post('employees/invitation/{token}', 'EmployeeController@update');
+
     Route::get('settings', 'HomeController@settings');
     Route::get('services', 'ServiceController@index');
     Route::post('services/load/result', 'ServiceController@load');

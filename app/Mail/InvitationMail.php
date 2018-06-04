@@ -28,6 +28,6 @@ class InvitationMail extends Mailable
      */
     public function build()
     {
-        return $this->view('email.invitation');
+        return $this->subject('Invitation to join serloc')->view('email.invitation');
     }
 }

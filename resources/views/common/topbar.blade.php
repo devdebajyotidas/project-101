@@ -118,7 +118,7 @@
                     </a>
                     <div class="dropdown-menu" role="menu">
                         <a class="dropdown-item" href="{{url('profile')}}" role="menuitem"><i class="icon md-account" aria-hidden="true"></i> Profile</a>
-                        <a class="dropdown-item" href="{{url('settings')}}" role="menuitem"><i class="icon md-settings" aria-hidden="true"></i> Settings</a>
+                        <a class="dropdown-item" href="{{url('employees')}}" role="menuitem"><i class="icon md-accounts" aria-hidden="true"></i> Employees</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{{url('logout')}}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
                     </div>
