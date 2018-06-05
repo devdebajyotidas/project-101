@@ -67,6 +67,7 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('comment', 'CommentController@store');
     Route::put('comment/{comment_id}', 'CommentController@update');
     Route::get('comment/approve/{comment_id}', 'CommentController@approve');
+    Route::post('comment/report', 'CommentController@report');
 
     /*Shouts*/
     Route::get('shouts/taker/{account_id}', 'ShoutsController@takerShouts');

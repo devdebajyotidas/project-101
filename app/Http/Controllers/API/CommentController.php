@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Comments;
+use App\Models\ReportAbuse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
@@ -125,6 +126,39 @@ class CommentController extends Controller
             $response->message="Comment doesn't exist";
         }
 
+        return response()->json($response);
+    }
+
+    function report(Request $request){
+        $response=new \stdClass();
+
+        if(!isset($request->account_id) && empty($request->account_id)){
+            $response->success=false;
+            $response->message="Invalid account selection";
+            return response()->json($response);
+        }
+
+        if(!isset($request->account_id) && empty($request->account_id)){
+            $response->success=false;
+            $response->message="Invalid account selection";
+            return response()->json($response);
+        }
+
+        if(!isset($request->comment_id) && empty($request->comment_id)){
+            $response->success=false;
+            $response->message="Invalid comment selection";
+            return response()->json($response);
+        }
+
+        $status=ReportAbuse::create($request->all());
+        if($status){
+            $response->success=true;
+            $response->message="You've reported this as abuse";
+        }
+        else{
+            $response->success=false;
+            $response->message="Unable to report this";
+        }
         return response()->json($response);
     }
 }
