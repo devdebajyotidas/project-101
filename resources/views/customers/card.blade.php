@@ -6,7 +6,7 @@
     $imageurl=url('uploads').'/';
     ?>
  <div  class="col-md-3 customer-col">
-    <a href="{{url('customer/pr').'/'.$customer->account_id}}" class="card card-shadow h-350 white">
+    <a href="{{url('customer/profile').'/'.$customer->account_id}}" class="card card-shadow h-350 white">
         <div class="card-block p-20">
             <div class="avatar avatar-100 float-left mr-20" href="javascript:void(0)">
                 <img src="{{!empty($customer->account->photo) ? $customer->account->photo : $imageurl.'default-avatar.png'  }}" alt="">
