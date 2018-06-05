@@ -17,6 +17,8 @@ class CreateShoutsTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->string('area')->nullable();
+            $table->string('latitude');
+            $table->string('longitude');
             $table->integer('service_id');
             $table->integer('taken_by');
             $table->tinyInteger('is_complete')->default(0);

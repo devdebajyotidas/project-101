@@ -11,8 +11,19 @@ class Shout extends Model
         'user_id',
         'service_id',
         'area',
+        'latitude',
+        'longitude',
         'taken_by',
         'is_complete'
+    ];
+
+    public static $rules = [
+        "create" => [
+            'latitude' => 'required',
+            'longitude' => 'required',
+            'user_id' => 'required',
+            'service_id' => 'required',
+        ]
     ];
 
     function taker(){
