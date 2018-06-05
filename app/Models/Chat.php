@@ -9,6 +9,13 @@ class Chat extends Model
     protected $fillable=[
         'provider_id',
         'user_id',
-        'message'
     ];
+
+    function provider(){
+        return $this->hasMany('App\Models\Account','id','provider_id');
+    }
+
+    function taker(){
+        return $this->hasMany('App\Models\Account','id','user_id');
+    }
 }

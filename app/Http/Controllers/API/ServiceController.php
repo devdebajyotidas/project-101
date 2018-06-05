@@ -282,6 +282,21 @@ class ServiceController extends Controller
                 }
             }
 
+
+//            $filtered=new Collection();
+//            $results->each(function ($item,$key) use ($filtered,$lat,$lon,$radius) {
+//                $insearch=$this->getDistanceBetweenPointsNew($lat, $lon, $item['latitude'], $item['longitude']);
+//                if( $insearch < $radius) {
+//                    $filtered->push($item);
+//                }
+//            });
+//
+//            $data = $filtered->map(function ($item) {
+//                $collect=new Collection(['account_id'=>$item['account_id'],'service_id'=>$item['id'],'name'=>$item['name'],'latitude'=>$item['latitude'],'longitude'=>$item['longitude']]);
+//                return $collect;
+//            });
+
+
             $data = $results->map(function ($item) {
                 $collect=new Collection(['account_id'=>$item['account_id'],'service_id'=>$item['id'],'name'=>$item['name'],'latitude'=>$item['latitude'],'longitude'=>$item['longitude']]);
                 return $collect;

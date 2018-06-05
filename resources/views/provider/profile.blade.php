@@ -23,180 +23,87 @@
             <div class="row">
                 <div class="col-lg-6 col-xl-3 pull-xl-6">
                     <div class="card card-shadow text-center">
+                        <?php
+                            $address=null;
+                            if(isset($info) && !empty($info)){
+                                $address.=!empty($info->account->address) ? $info->account->address : 'N/A';
+                                $address.=!empty($info->account->city) ? ' ,'.$info->account->city: '' ;
+                                $address.=!empty($info->account->state) ? ' ,'.$info->account->state: '' ;
+                                $address.=!empty($info->account->zip) ? ' - '.$info->account->zip: '' ;
+
+                                $now=\Carbon\Carbon::now();
+                                $created=new \Carbon\Carbon($info->created_at);
+                                $imageurl=url('uploads').'/';
+                                $image=!empty($info->account->photo) ? $info->account->photo : $imageurl.'default-avatar.png';
+                            }
+                        ?>
                         <div class="card-block">
-                            <a class="avatar avatar-lg" href="javascript:void(0)">
-                                <img src="../../../global/portraits/5.jpg" alt="...">
-                            </a>
-                            <h4 class="profile-user">Terrance arnold</h4>
-                            <p class="profile-job">Service Provider</p>
-                            <p class="profile-job">maikap.samir@gmail.com</p>
-                            <p class="profile-job">9547176376</p>
-                            <p class="profile-job">South Dum Dum, Kolkata, West Bengal 700074</p>
-                            <p>Hi! I'm Adrian the Senior UI Designer at AmazingSurge. We hope
-                                you enjoy the design and quality of Social.</p>
+                            <div class="avatar  avatar-100">
+                                <img src="{{$image}}" alt="...">
+                            </div>
+                            <h4 class="profile-user mt-15">{{isset($info->name) ? ucwords($info->name) : 'N/A'}}</h4>
+                            <p class="profile-job">{{$address}}</p>
+                            <p class="profile-job">{{isset($info->email) ? $info->email  : 'N/A'}}</p>
+                            <p class="profile-job">{{isset($info->mobile) ? $info->mobile  : 'N/A'}}</p>
+                            <p class="profile-job">Aadhaar: {{isset($info->account) ? !empty($info->account->aadhaar) ? $info->account->aadhaar : 'N/A' : 'N/A' }}</p>
+                            @if(isset($info->account->is_blocked) && $info->account->is_blocked==0 )
+                                <p class="profile-job text-success">Active</p>
+                            @else
+                                <p class="profile-job text-warning">Blocked</p>
+                            @endif
+
+                            <p class="profile-job">Joined {{($created->diff($now)->days < 1) ? 'today' : $created->diffForHumans($now)}}</p>
                         </div>
                         <div class="card-footer">
                             <div class="row no-space">
                                 <div class="col-6">
-                                    <strong class="profile-stat-count">260</strong>
+                                    <strong class="profile-stat-count">{{isset($total_connects) ? $total_connects : 0}}</strong>
                                     <span>Connects</span>
                                 </div>
                                 <div class="col-6">
-                                    <strong class="profile-stat-count">180</strong>
+                                    <strong class="profile-stat-count">{{isset($total_services) ? $total_services : 0}}</strong>
                                     <span>Services</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Friend List -->
-                    <div class="user-friends card card-shadow">
-                        <div class="card-block">
-                            <h4 class="card-title mb-20">
-                                Friends
-                                <span>210</span>
-                            </h4>
-                            <ul class="list-group list-group-full m-0">
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-online" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/1.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                Herman Beck
-                                            </h5>
-                                            <small>CEO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-busy" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/2.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                Mary Adams
-                                            </h5>
-                                            <small>CIO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-off" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/3.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                Caleb Richards
-                                            </h5>
-                                            <small>CTO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-away" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/4.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                June Lane
-                                            </h5>
-                                            <small>CVO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- End Friends List -->
                 </div>
                 <div class="col-lg-6 col-xl-3 ">
                     <div class="user-friends card card-shadow">
                         <div class="card-block">
                             <h4 class="card-title mb-20">
-                                Friends
-                                <span>210</span>
+                               Recent Connects
                             </h4>
                             <ul class="list-group list-group-full m-0">
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-online" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/1.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                Herman Beck
-                                            </h5>
-                                            <small>CEO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-busy" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/2.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                Mary Adams
-                                            </h5>
-                                            <small>CIO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-off" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/3.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                Caleb Richards
-                                            </h5>
-                                            <small>CTO</small>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="media">
-                                        <div class="pr-20">
-                                            <a class="avatar avatar-away" href="javascript:void(0)">
-                                                <img class="img-fluid" src="../../../global/portraits/4.jpg" alt="...">
-                                                <i></i>
-                                            </a>
-                                        </div>
-                                        <div class="media-body">
-                                            <h5 class="mt-0 mb-5 hover">
-                                                June Lane
-                                            </h5>
-                                            <small>CVO</small>
-                                        </div>
-                                    </div>
-                                </li>
+                                @if(isset($connects) && count($connects) > 0)
+                                    @foreach($connects as $connect)
+                                        <?php
+                                        $con_status=$connect->provider[0]->is_blocked == 0 ? 'avatar-online' : 'avatar-busy';
+                                        $con_created=new \Carbon\Carbon($connect->created_at);
+                                        $con_image=!empty($connect->provider[0]->photo) ? $connect->provider[0]->photo : $imageurl.'default-avatar.png';
+
+                                        ?>
+                                        <li class="list-group-item">
+                                            <div class="media">
+                                                <div class="pr-20">
+                                                    <a  class="avatar {{$con_status}}" href="{{url('customers').'/'.$connect->provider[0]->id}}">
+                                                        <img class="img-fluid" src="{{$con_image}}" alt="...">
+                                                        <i></i>
+                                                    </a>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h5 class="mt-0 mb-5 hover">
+                                                        {{isset($connect->provider[0]->user) ? ucwords($connect->provider[0]->user->name) : 'N/A' }}
+                                                    </h5>
+                                                    <small>{{($con_created->diff($now)->days < 1) ? 'today' : $con_created->diffForHumans($now)}}</small>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li class="list-group-item "><h5 class="text-info">No connects available</h5></li>
+                                @endif
                             </ul>
                         </div>
                     </div>
@@ -206,135 +113,106 @@
                     <div class="user-friends card card-shadow">
                         <div class="card-block">
                             <h4 class="card-title mb-20">
-                                Service History
-                                {{--<span>210</span>--}}
+                                Recent Service History
                             </h4>
                             <ul class="list-group list-group-full m-0">
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="media">
-                                                <div class="pr-20">
-                                                    <a class="avatar avatar-online" href="javascript:void(0)">
-                                                        <img class="img-fluid" src="../../../global/portraits/1.jpg" alt="...">
-                                                        <i></i>
-                                                    </a>
+
+                                @if(isset($serviceTakens) && count($serviceTakens) > 0)
+                                    @foreach($serviceTakens as $st)
+                                        <?php
+                                        $now=\Carbon\Carbon::now();
+                                        $created=new \Carbon\Carbon($st->created_at);
+                                        $imageurl=url('uploads').'/';
+                                        $image=!empty($st->account[0]->photo) ? $st->account[0]->photo : $imageurl.'default-avatar.png';
+
+                                        $stu_status=$st->account[0]->is_blocked == 0 ? 'avatar-online' : 'avatar-busy';
+
+                                        $completed_at=empty($st->completed_at) ? date('Y-m-d H:i:s') : $st->completed_at;
+                                        $d1= \Illuminate\Support\Carbon::createFromFormat('Y-m-d H:i:s',$completed_at);
+                                        $d2= \Illuminate\Support\Carbon::createFromFormat('Y-m-d H:i:s',$st->created_at);
+                                        $interval= $d1->diff($d2);
+                                        $duration=($interval->days * 24) + $interval->h;
+                                        ?>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <div class="media">
+                                                        <div class="pr-20">
+                                                            <a class="avatar {{$stu_status}}" href="{{url('customers').'/'.$st->account[0]->id}}">
+                                                                <img class="img-fluid" src="{{$image}}" alt="...">
+                                                                <i></i>
+                                                            </a>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <h5 class="mt-0 mb-5 hover">
+                                                                {{isset($st->account[0]->user) ? ucwords($st->account[0]->user->name) : 'N/A' }}
+                                                            </h5>
+                                                            <small>{{!empty($st->account[0]->address) ? $st->account[0]->address : 'N/A'}} {{!empty($st->account[0]->city) ? ' ,'.$st->account[0]->city : ''}} {{!empty($st->account[0]->zip) ? ' - '.$st->account[0]->zip : ''}}</small>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="media-body">
-                                                    <h5 class="mt-0 mb-5 hover">
-                                                        Herman Beck
+                                                <div class="col-md-2">
+                                                    <h5 class="mt-0 mb-5 text-primary">
+                                                        &#8377; {{isset($st->amount) ? $st->amount : 0 }}
                                                     </h5>
-                                                    <small>South Dum Dum, Kolkata, West Bengal 700074</small>
+                                                    <small>{{$duration}} hours</small>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    @if(!empty($st->completed_at))
+                                                        <span class="badge badge-outline badge-success">Completed</span>
+                                                    @else
+                                                        <span class="badge badge-outline badge-info">Ongoing</span>
+                                                    @endif
+
+                                                </div>
+                                            </div>
+
+                                        </li>
+                                    @endforeach
+                                @else
+                                    <li class="list-group-item">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="media">
+                                                    <h5 class="text-info">No service history found</h5>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-2">
-                                            <h5 class="mt-0 mb-5 text-primary">
-                                                4500
-                                            </h5>
-                                            <small>22 hours</small>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <span class="badge badge-outline badge-success">Completed</span>
-                                        </div>
-                                    </div>
-
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="media">
-                                                <div class="pr-20">
-                                                    <a class="avatar avatar-online" href="javascript:void(0)">
-                                                        <img class="img-fluid" src="../../../global/portraits/1.jpg" alt="...">
-                                                        <i></i>
-                                                    </a>
-                                                </div>
-                                                <div class="media-body">
-                                                    <h5 class="mt-0 mb-5 hover">
-                                                        Herman Beck
-                                                    </h5>
-                                                    <small>South Dum Dum, Kolkata, West Bengal 700074</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <h5 class="mt-0 mb-5 text-primary">
-                                                4500
-                                            </h5>
-                                            <small>22 hours</small>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <span class="badge badge-outline badge-success">Completed</span>
-                                        </div>
-                                    </div>
-
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="media">
-                                                <div class="pr-20">
-                                                    <a class="avatar avatar-online" href="javascript:void(0)">
-                                                        <img class="img-fluid" src="../../../global/portraits/1.jpg" alt="...">
-                                                        <i></i>
-                                                    </a>
-                                                </div>
-                                                <div class="media-body">
-                                                    <h5 class="mt-0 mb-5 hover">
-                                                        Herman Beck
-                                                    </h5>
-                                                    <small>South Dum Dum, Kolkata, West Bengal 700074</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <h5 class="mt-0 mb-5 text-primary">
-                                                4500
-                                            </h5>
-                                            <small>22 hours</small>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <span class="badge badge-outline badge-success">Completed</span>
-                                        </div>
-                                    </div>
-
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="media">
-                                                <div class="pr-20">
-                                                    <a class="avatar avatar-online" href="javascript:void(0)">
-                                                        <img class="img-fluid" src="../../../global/portraits/1.jpg" alt="...">
-                                                        <i></i>
-                                                    </a>
-                                                </div>
-                                                <div class="media-body">
-                                                    <h5 class="mt-0 mb-5 hover">
-                                                        Herman Beck
-                                                    </h5>
-                                                    <small>South Dum Dum, Kolkata, West Bengal 700074</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <h5 class="mt-0 mb-5 text-primary">
-                                                4500
-                                            </h5>
-                                            <small>22 hours</small>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <span class="badge badge-outline badge-success">Completed</span>
-                                        </div>
-                                    </div>
-
-                                </li>
+                                    </li>
+                                @endif
                             </ul>
                         </div>
                     </div>
                 </div>
 
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-20">
+                    <h4>Available services</h4>
+                </div>
+
+                @if(isset($services) && count($services) > 0)
+                    @foreach($services as $service)
+                        <?php
+                        $service_imageurl=url('uploads').'/service/';
+                        $image=!empty($service->adminservice->image) ? $service_imageurl.$service->adminservice->image : $service_imageurl.'default-service.png';
+                        ?>
+
+                        <div class="col-md-3">
+                            <div class="card  card-shadow h-250 text-center">
+                                <div class="card-block">
+                                    <div class="avatar avatar-square avatar-100">
+                                        <img src="{{$image}}" alt="...">
+                                    </div>
+                                    <h4 class="profile-user mt-15">{{isset($service->adminservice->name) ? $service->adminservice->name :'N/A' }}</h4>
+                                    <p class="profile-job">{{isset($service->area) ? $service->area :'N/A'}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="col-md-3"><h5 class="text-info">No services found</h5></div>
+                @endif
             </div>
         </div>
     </div>

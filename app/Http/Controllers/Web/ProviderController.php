@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Web;
 
 use App\Models\Account;
+use App\Models\Chat;
+use App\Models\Service;
+use App\Models\ServiceTaken;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -19,6 +22,15 @@ class ProviderController extends Controller
     function profile($account_id){
         $data['page']='profile';
         $data['bodyClass']='animsition page-profile-v3';
+        $data['info']=$this->providerInfo($account_id);
+        $connects=$this->providerConnects($account_id);
+        $data['connects']=$connects['connects'];
+        $data['total_connects']=$connects['total_connects'];
+        $data['serviceTakens']=$this->providerServiceHistory($account_id);
+        $services=$this->providerServices($account_id);
+        $data['services']=$services;
+        $data['total_services']=$services->count();
+//        dd($data);
         return view('provider.profile',$data);
     }
 
@@ -85,5 +97,42 @@ class ProviderController extends Controller
         $data['total_result']=$result->count();
         $data['providers']=$result->skip($offset)->take(20)->get();
         return view('provider.card',$data);
+    }
+
+    function providerInfo($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $provider=User::with('account')->where('account_id',$account_id)->first();
+        return $provider;
+    }
+
+    function providerConnects($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $data['total_connects']=Chat::with('provider.user')->where('provider_id',$account_id)->count();
+        $data['connects']=Chat::with('provider.user')->where('provider_id',$account_id)->take(6)->get();
+        return $data;
+    }
+
+    function providerServiceHistory($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $services=ServiceTaken::with('account.user')->where('provider_id',$account_id)->take(6)->get();
+        return $services;
+    }
+
+    function providerServices($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $services=Service::with('adminService')->where('account_id',$account_id)->get();
+        return $services;
     }
 }
