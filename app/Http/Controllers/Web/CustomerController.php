@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Models\Account;
+use App\Models\Chat;
+use App\Models\ServiceTaken;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -110,4 +112,47 @@ class CustomerController extends Controller
         }
         return response()->json($response);
     }
+
+
+    function profile($account_id){
+        $data['page']='profile';
+        $data['bodyClass']='animsition page-profile-v3';
+        $data['info']=$this->customerInfo($account_id);
+        $connects=$this->customerConnects($account_id);
+        $data['connects']=$connects['connects'];
+        $data['total_connects']=$connects['total_connects'];
+        $takens=$this->customerServiceHistory($account_id);
+        $data['serviceTakens']=$takens;
+        $data['total_services']=$takens->count();
+        return view('customers.profile',$data);
+    }
+
+    function customerInfo($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $provider=User::with('account')->where('account_id',$account_id)->first();
+        return $provider;
+    }
+
+    function customerConnects($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $data['total_connects']=Chat::with('taker.user')->where('user_id',$account_id)->count();
+        $data['connects']=Chat::with('taker.user')->where('user_id',$account_id)->take(6)->get();
+        return $data;
+    }
+
+    function customerServiceHistory($account_id){
+        if(empty($account_id)){
+            return null;
+        }
+
+        $services=ServiceTaken::with('account.user')->where('user_id',$account_id)->take(6)->get();
+        return $services;
+    }
+
 }

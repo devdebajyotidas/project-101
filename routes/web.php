@@ -39,7 +39,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('providers/load/result', 'ProviderController@search');
     Route::get('providers/profile/{account_id}', 'ProviderController@profile');
     Route::get('customer', 'CustomerController@index');
-    Route::get('customer/{account_id}', 'CustomerController@show');
+    Route::get('customer/profile/{account_id}', 'CustomerController@profile');
     Route::post('customer/load/result', 'CustomerController@search');
     Route::post('customer/{account_id}/block', 'CustomerController@block');
     Route::get('shouts', 'ShoutController@index');
