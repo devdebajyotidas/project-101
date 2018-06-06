@@ -66,7 +66,7 @@
     <script src="{{url('global')}}/vendor/gmaps/gmaps.js"></script>
     <script src="{{url('global')}}/js/Plugin/gmaps.js"></script>
     <script src="{{url('assets')}}/examples/js/pages/map-google.js"></script>
-    <script src="http://maps.google.com/maps/api/js?key=AIzaSyAs6egI5LIpX6H3RoACfXSRNGDfDbM68mk"></script>
+    <script src="http://maps.google.com/maps/api/js?key=AIzaSyAs6egI5LIpX6H3RoACfXSRNGDfDbM68mk&libraries=places"></script>
 @elseif($page=='provider' || $page=='customer' || $page=='service')
     {{----}}
 @elseif($page=='shout')

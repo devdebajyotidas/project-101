@@ -19,7 +19,8 @@
     margin-top: -5px !important;
 }
 .card-shadow{
-    box-shadow: 0 1px 3px rgba(0,0,0,0.14) !important;
+    /*box-shadow: 0 1px 3px rgba(0,0,0,0.14) !important;*/
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2),0 -1px 0px rgba(0,0,0,0.02) !important;
 }
 .avatar-square{
     border-radius: 0 !important;

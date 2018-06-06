@@ -20,6 +20,8 @@ Route::group(['namespace' => 'Web'], function () {
     Auth::routes();
     Route::get('logout', 'Auth\LoginController@logout');
     Route::get('home', 'HomeController@home');
+    Route::post('home/map/load', 'HomeController@load');
+    Route::post('home/account/info/{account_id}', 'HomeController@accountInfo');
     Route::get('profile', 'HomeController@profile');
 
     Route::get('employees', 'EmployeeController@index');
@@ -28,6 +30,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('employees/update', 'EmployeeController@update');
     Route::get('employees/invitation/{token}', 'EmployeeController@show');
     Route::post('employees/invitation/{token}', 'EmployeeController@update');
+    Route::get('employees/profile/{account_id}', 'EmployeeController@profile');
 
     Route::get('settings', 'HomeController@settings');
     Route::get('services', 'ServiceController@index');
