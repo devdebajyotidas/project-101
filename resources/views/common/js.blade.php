@@ -93,6 +93,19 @@
         var Site = window.Site;
         $(document).ready(function(){
             Site.run();
+            $(function(){
+                if(
+                    navigator.userAgent.match(/Android/i) ||
+                    navigator.userAgent.match(/webOS/i) ||
+                    navigator.userAgent.match(/iPhone/i) ||
+                    navigator.userAgent.match(/iPod/i)) {
+                    $('.card-shadow').css('box-shadow','0 2px 4px rgba(0,0,0,0.2),0 -1px 0px rgba(0,0,0,0.02) !important')
+                }
+            })
+            $('body').on('mousedown touchstart','.site-menu-item',function (e) {
+                var url=$(this).find('a').attr('href');
+                window.location.href=url;
+            })
         });
     })(document, window, jQuery);
     $.ajaxSetup({
@@ -100,6 +113,7 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
 </script>
 
 {{--Extended Js--}}

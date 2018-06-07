@@ -14,11 +14,6 @@ class HomeController extends Controller
     function home(){
         $data['page'] = 'home';
         $data['bodyClass']='animsition page-map page-map-full';
-        $request=new Request();
-//        $request->setMethod('POST');
-//        $request->request->add('');
-//        $data['accounts']=$this->load($request);
-//        dd($data['accounts']);
         return view('home',$data);
     }
 
