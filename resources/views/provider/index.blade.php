@@ -29,6 +29,13 @@
             margin-bottom: 0;
             margin-left: 5px;
         }
+
+        .location-link{
+            cursor: pointer;
+        }
+        .location-link:hover{
+            text-decoration: underline;
+        }
         @media  screen and (max-width: 980px) {
             .page-header .row .col-md-3{
                 margin-bottom: 20px !important;
@@ -172,6 +179,16 @@
 
             $('#more-button').click(function(){
                 loadResult();
+            })
+
+            $('body').on('click','.location-link',function(e){
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                var lat=$(this).data('lat');
+                var lon=$(this).data('lon');
+                var type=$(this).data('type');
+                var city=$(this).data('city');
+                window.open("{{url('home/map/locate?lat=')}}"+lat+"&lon="+lon+"&city="+city+"&type="+type,'_blank');
             })
 
             function loadResult(){

@@ -30,7 +30,6 @@ class ProviderController extends Controller
         $services=$this->providerServices($account_id);
         $data['services']=$services;
         $data['total_services']=$services->count();
-//        dd($data);
         return view('provider.profile',$data);
     }
 
@@ -58,44 +57,28 @@ class ProviderController extends Controller
 
         $filter_arr=explode(',',$filter);
 
-        if (in_array ('aadhaar_verified', $filter_arr)) {
-            $accounts=Account::where('is_provider',1)->where('aadhaar_verified',1)->pluck('id')->toArray();
-        }
-        else{
-            $accounts=Account::where('is_provider',1)->pluck('id')->toArray();
-        }
+        $results=Account::join('users as u','u.account_id','=','accounts.id')->with(['activity'=>function($query){
+            $query->orderBy('created_at','desc')->first();
+        }])->select(['accounts.*','u.name','u.email','u.mobile','u.created_at','u.is_employee','u.mobile_verified','u.email_verified'])->where('is_provider',1)->where('is_employee',0);
 
-        if(!empty($search) && !empty($sort)){
-            $result= User::with('account')->whereIn('account_id',$accounts)->where(function($query) use ($search){
-                $query->where('name','LIKE',"%$search%")->orWhere('email','LIKE',"%$search%")->orWhere('mobile','LIKE',"%$search%");
-            })->orderBy($sort_col,$sort_val);
-        }
-        elseif(empty($search) && !empty($sort)){
-            $result= User::with('account')->whereIn('account_id',$accounts)->orderBy($sort_col,$sort_val);
-        }
-        elseif(!empty($search) && empty($sort)){
-            $result= User::with('account')->whereIn('account_id',$accounts)->where(function($query) use ($search){
-                $query->where('name','LIKE',"%$search%")->orWhere('email','LIKE',"%$search%")->orWhere('mobile','LIKE',"%$search%");
-            })->orderBy($sort_col,$sort_val);
-        }
-        else{
-            $result= User::with('account')->whereIn('account_id',$accounts)->orderBy($sort_col,$sort_val);
-        }
-
-        if (($key = array_search('aadhaar_verified', $filter_arr)) !== false) {
-            unset($filter_arr[$key]);
+        if(!empty($search)){
+            $results=$results->where('name','LIKE',"%$search%")->orWhere('email','LIKE',"%$search%")->orWhere('mobile','LIKE',"%$search%");
         }
 
         if(count($filter_arr) > 0){
             foreach ($filter_arr as $fil){
                 if(!empty($fil)){
-                    $result->where($fil,1);
+                    $results->where($fil,1);
                 }
             }
         }
 
-        $data['total_result']=$result->count();
-        $data['providers']=$result->skip($offset)->take(20)->get();
+        if(!empty($sort_col)){
+            $results=$results->orderBy($sort_col,$sort_val);
+        }
+
+        $data['total_result']=$results->count();
+        $data['providers']=$results->skip($offset)->take(20)->get();
         return view('provider.card',$data);
     }
 
