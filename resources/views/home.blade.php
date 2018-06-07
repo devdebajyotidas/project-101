@@ -364,11 +364,18 @@
                 },1000);
 
             });
+
+            google.maps.event.addListenerOnce(map, 'idle', function(){
+                // do something only the first time the map is loaded
+                var lat= this.getCenter().lat();
+                var lon=this.getCenter().lng();
+                var zoom=this.getZoom();
+                getData(map,lat,lon,zoom);
+            });
         }
 
         window.onload=function(){
             initMap();
-            getData(22.6059,88.3968,1)
             $('.btn-close').click(function () {
                 $('.user-details').stop(0).slideUp('fast');
             })
@@ -382,9 +389,11 @@
                 if(len > 0){
                     for (var i=0;i<len;i++){
                         var position=new google.maps.LatLng(response[i].latitude, response[i].longitude);
+                        var icon = new google.maps.MarkerImage(response[i].image, null, null, null, new google.maps.Size(24,24));
                         var marker = new google.maps.Marker({
                             position: position,
-                            icon: response[i].image,
+                            icon: icon,
+                            flat: true,
                             map: map
                         });
                         marker.accountId=response[i].account_id;
@@ -400,6 +409,7 @@
         }
 
         function displayUserContent(id){
+            NProgress.start();
             var url="{{url('home/account/info')}}/"+id;
             $.post(url,function(response){
                 if(response.status){
@@ -414,6 +424,7 @@
                         $('.user-status').html(response.data.active).addClass('text-danger');
                     }
                     $('.user-details').stop(0).slideDown('fast');
+                    NProgress.done();
                 }
                 else{
                     alertify.logPosition("bottom right");

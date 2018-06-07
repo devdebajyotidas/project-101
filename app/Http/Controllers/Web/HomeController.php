@@ -54,10 +54,10 @@ class HomeController extends Controller
 
         $data = $filtered->map(function ($item) {
             if($item['is_provider']==1){
-                $image=url('/assets/provider.svg');
+                $image=url('/assets/provider-point.png');
             }
             else{
-                $image=url('/assets/customer.svg');
+                $image=url('/assets/customer-point.png');
             }
 
             $collect=new Collection(['account_id'=>$item['id'],'image'=>$image,'latitude'=>$item['latitude'],'longitude'=>$item['longitude']]);
