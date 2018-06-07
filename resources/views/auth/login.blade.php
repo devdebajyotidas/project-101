@@ -109,7 +109,7 @@
 
         <footer class="page-copyright page-copyright-inverse">
 
-            <p>© {{date('Y')}} {{config('app.name')}}</p>
+            <p class="grey-700">© {{date('Y')}} {{config('app.name')}}</p>
 
         </footer>
     </div>
