@@ -29,6 +29,12 @@
             margin-bottom: 0;
             margin-left: 5px;
         }
+        .location-link{
+            cursor: pointer;
+        }
+        .location-link:hover{
+            text-decoration: underline;
+        }
         @media  screen and (max-width: 980px) {
             .page-header .row .col-md-3{
                 margin-bottom: 20px !important;
@@ -57,7 +63,7 @@
                         <div class="col-sm-9">
                             <div class="input-search ">
                                 <i class="input-search-icon md-search" aria-hidden="true"></i>
-                                <input type="text" class="form-control" id="inputSearch" name="search" placeholder="Search Users">
+                                <input type="text" class="form-control" id="inputSearch" name="search" placeholder="Search">
                             </div>
                         </div>
                         <div class="col-sm-3">
@@ -82,13 +88,13 @@
                                         </li>
                                         <li class="dropdown-item">
                                             <input type="radio" class="icheckbox-primary" id="rad-3" name="sort"
-                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at asc"
+                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at desc"
                                             />
                                             <label for="rad-3">Newest</label>
                                         </li>
                                         <li class="dropdown-item">
                                             <input type="radio" class="icheckbox-primary" id="rad-4" name="sort"
-                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at desc"
+                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at asc"
                                             />
                                             <label for="rad-4">Oldest</label>
                                         </li>
@@ -173,6 +179,16 @@
 
             $('#more-button').click(function(){
                 loadResult();
+            })
+
+            $('body').on('click','.location-link',function(e){
+                e.stopImmediatePropagation();
+                e.preventDefault();
+                var lat=$(this).data('lat');
+                var lon=$(this).data('lon');
+                var type=$(this).data('type');
+                var city=$(this).data('city');
+                window.open("{{url('home/map/locate?lat=')}}"+lat+"&lon="+lon+"&city="+city+"&type="+type,'_blank');
             })
 
             function loadResult(action=null){

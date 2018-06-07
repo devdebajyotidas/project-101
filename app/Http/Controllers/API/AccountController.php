@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Mail\VerificationMail;
 use App\Models\Account;
+use App\Models\ActivityLog;
 use App\Models\Comments;
 use App\Models\Service;
 use App\Models\User;
@@ -273,6 +274,27 @@ class AccountController extends Controller
         else{
             $response->success=false;
             $response->message=$validator->errors()->first();
+        }
+        return response()->json($response);
+    }
+
+    function activity($account_id){
+        $response=new \stdClass();
+        if(empty($account_id)){
+            $response->success=false;
+            $response->message="Invalid account selection";
+            return $response;
+        }
+
+        $data['account_id']=$account_id;
+        $activity=ActivityLog::create($data);
+        if($activity){
+            $response->success=true;
+            $response->message="New activity added";
+        }
+        else{
+            $response->success=false;
+            $response->message="Unable to add activity";
         }
         return response()->json($response);
     }

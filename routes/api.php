@@ -32,6 +32,8 @@ Route::group(['namespace' => 'API'], function () {
     Route::post('accounts/login/advance', 'UserController@login');
     Route::post('accounts/register', 'UserController@register');
 
+    Route::get('accounts/activity/{account_id}', 'AccountController@activity');
+
     /*Profile*/
     Route::get('profile/{account_id}', 'AccountController@index');
     Route::put('profile/{account_id}', 'AccountController@update');

@@ -41,6 +41,9 @@
             float: right;
             margin-top: 5px;
         }
+        input{
+            outline: 0;
+        }
         @media screen and (max-width: 480px){
             .search-bar{
                 width: 100%;

@@ -62,4 +62,8 @@ class Account extends Model implements AuditableContract
     public function reportAbuse(){
         return $this->belongsTo('App\Models\ReportAbuse');
     }
+
+    public function activity(){
+        return $this->hasMany('App\Models\ActivityLog','account_id','id');
+    }
 }
