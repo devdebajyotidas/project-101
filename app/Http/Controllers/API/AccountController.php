@@ -278,7 +278,7 @@ class AccountController extends Controller
         return response()->json($response);
     }
 
-    function activity($account_id){
+    public function activity($account_id){
         $response=new \stdClass();
         if(empty($account_id)){
             $response->success=false;

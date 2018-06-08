@@ -33,6 +33,12 @@
                             <span class="site-menu-title">Service Shout</span>
                         </a>
                     </li>
+                    <li class="site-menu-item {{ $page=='request' ? 'active' : ''}}">
+                        <a class="animsition-link" href="{{url('services/request')}}">
+                            <i class="site-menu-icon material-icons">format_paint</i>
+                            <span class="site-menu-title">Requests</span>
+                        </a>
+                    </li>
                     <li class="site-menu-item {{ $page=='abuse' ? 'active' : ''}}">
                         <a class="animsition-link" href="{{url('feedback')}}">
                             <i class="site-menu-icon material-icons">feedback</i>

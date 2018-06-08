@@ -60,4 +60,6 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('reports/load/service/usage/{service_id}', 'ReportsController@serviceUsage')->middleWare('checkAuth');
     Route::post('reports/load/service/taken/{service_id}', 'ReportsController@serviceTaken')->middleWare('checkAuth');
 
+    Route::get('services/request', 'RequestController@index')->middleWare('checkAuth');
+
 });

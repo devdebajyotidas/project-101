@@ -14,7 +14,7 @@
         $city=$provider->city;
         ?>
         <div  class="col-md-3 provider-col">
-            <a href="{{url('provider/profile').'/'.$provider->id}}" class="card card-shadow h-350 white">
+            <a href="{{url('providers/profile').'/'.$provider->id}}" class="card card-shadow h-350 white">
                 <div class="card-block p-20">
                     <div class="avatar avatar-100 float-left mr-20" href="javascript:void(0)">
                         <img src="{{!empty($provider->photo) ? $provider->photo : $imageurl.'default-avatar.png'  }}" alt="">

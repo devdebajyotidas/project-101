@@ -89,13 +89,13 @@
                                         </li>
                                         <li class="dropdown-item">
                                             <input type="radio" class="icheckbox-primary" id="rad-3" name="sort"
-                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at asc"
+                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at desc"
                                             />
                                             <label for="rad-3">Newest</label>
                                         </li>
                                         <li class="dropdown-item">
                                             <input type="radio" class="icheckbox-primary" id="rad-4" name="sort"
-                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at desc"
+                                                   data-plugin="iCheck" data-radio-class="iradio_flat-blue" value="created_at asc"
                                             />
                                             <label for="rad-4">Oldest</label>
                                         </li>
