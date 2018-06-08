@@ -110,4 +110,15 @@ class HomeController extends Controller
 
         return response()->json($response);
     }
+
+    /*Display something on map*/
+    function locate(){
+        $data['page'] = 'home';
+        $data['bodyClass']='animsition page-map page-map-full';
+        return view('map',$data);
+    }
+
+    function locateService($service_id){
+
+    }
 }

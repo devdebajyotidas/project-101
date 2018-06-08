@@ -24,6 +24,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('home/map/load', 'HomeController@load')->middleWare('checkAuth');
     Route::post('home/account/info/{account_id}', 'HomeController@accountInfo')->middleWare('checkAuth');
     Route::get('profile', 'HomeController@profile')->middleWare('checkAuth');
+    Route::get('home/map/locate' ,'HomeController@locate')->middleWare('checkAuth');
 
     Route::get('employees', 'EmployeeController@index')->middleWare('checkAuth');
     Route::post('employees/load/result', 'EmployeeController@load')->middleWare('checkAuth');
@@ -61,5 +62,7 @@ Route::group(['namespace' => 'Web'], function () {
     Route::post('reports/load/service/taken/{service_id}', 'ReportsController@serviceTaken')->middleWare('checkAuth');
 
     Route::get('services/request', 'RequestController@index')->middleWare('checkAuth');
+
+    Route::get('settings', 'SettingsController@index')->middleWare('checkAuth');
 
 });

@@ -39,14 +39,18 @@
     {{--<link rel="stylesheet" href="{{url('assets')}}/examples/css/pages/profile.css">--}}
     <link rel="stylesheet" href="{{url('global')}}/vendor/slick-carousel/slick.css">
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/pages/profile-v2.css">
-    @elseif($page=='employee profile')
+@elseif($page=='employee profile')
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/pages/profile_v3.css">
 @elseif($page=='payment')
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/widgets/social.css">
 @elseif($page=='report')
     <link rel="stylesheet" href="{{url('assets')}}/examples/css/charts/chartjs.css">
     <link rel="stylesheet" href="{{url('global')}}/vendor/bootstrap-datepicker/bootstrap-datepicker.css">
- @elseif($page=='shout')
+@elseif($page=='shout')
     <link rel="stylesheet" href="{{url('global')}}/vendor/bootstrap-datepicker/bootstrap-datepicker.css">
+@elseif($page=='settings')
+    <link rel="stylesheet" href="{{url('global')}}/vendor/bootstrap-tokenfield/bootstrap-tokenfield.css">
+    <link rel="stylesheet" href="{{url('global')}}/vendor/bootstrap-tagsinput/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="{{url('assets')}}/examples/css/forms/advanced.css">
 @endif
 

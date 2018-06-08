@@ -10,6 +10,6 @@ class RequestController extends Controller
     public function index(){
         $data['page']='request';
         $data['bodyClass']='animsition';
-        return view('reports.index',$data);
+        return view('requests.index',$data);
     }
 }

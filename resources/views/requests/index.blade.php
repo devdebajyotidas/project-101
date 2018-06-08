@@ -133,7 +133,28 @@
         </div>
         <div class="page-content container-fluid">
             <div class="row" id="service-container">
-                {!! isset($services) ? $services : 'No service found' !!}
+                <div class="col-xl-4 col-lg-6 ">
+                    <div class="card card-inverse card-shadow bg-white" id="">
+                        <div class="card-block p-30 overlay overlay-hover">
+                            <div class="avatar avatar-100 avatar-square float-left  mr-10">
+                                <img class="img-fluid service-image" src="{{url('uploads/service')}}/default-service.png" alt="">
+                            </div>
+                            <div class="vertical-align text-left h-100 text-truncate">
+                                <div class="vertical-align-middle">
+                                    <div class="font-size-20 mb-5 blue-600 text-truncate service-name">Plumber</div>
+                                    <div class="text-truncate">
+                                        <small class="text-muted">Added 2 days ago</small>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-right">
+                            <button class="btn btn-inverse h-40 w-40 btn-round p-0 mr-20  text-primary edit-service" title="Edit"><i style="line-height: 40px" class="material-icons">edit</i></button>
+                            <button class="btn btn-inverse h-40 w-40 btn-round p-0 mr-10 text-primary toggle-service-action" data-action="restore" title="Restore"><i style="line-height: 40px" class="material-icons">unarchive</i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="row text-center more-button-container" style="display: none">
                 <div class="col-lg-12 text-center">

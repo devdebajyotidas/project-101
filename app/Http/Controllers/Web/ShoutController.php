@@ -14,7 +14,7 @@ class ShoutController extends Controller
 {
     function index(){
         $data['page']='shout';
-        $data['bodyClass']='';
+        $data['bodyClass']='animsition';
         $request=new Request();
         $request->setMethod('POST');
         $request->request->add(['sort' => 'name asc']);

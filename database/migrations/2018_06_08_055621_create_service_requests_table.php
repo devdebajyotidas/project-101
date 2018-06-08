@@ -17,6 +17,10 @@ class CreateServiceRequestsTable extends Migration
             $table->increments('id');
             $table->integer('account_id');
             $table->string('name');
+            $table->text('description');
+            $table->tinyInteger('is_accepted')->default(0);
+            $table->tinyInteger('is_denied')->default(0);
+            $table->text('remove_reason')->nullable();
             $table->timestamps();
         });
     }

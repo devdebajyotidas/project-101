@@ -84,6 +84,15 @@
     <script src="{{url('global')}}/vendor/datepair/jquery.datepair.min.js"></script>
     <script src="{{url('global')}}/js/Plugin/datepair.js"></script>
     <script src="{{url('global')}}/js/Plugin/bootstrap-datepicker.js"></script>
+@elseif($page=='settings')
+    <script src="{{url('global')}}/vendor/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+    <script src="{{url('global')}}/vendor/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+    <script src="{{url('global')}}/js/Plugin/bootstrap-tokenfield.js"></script>
+    <script src="{{url('global')}}/js/Plugin/bootstrap-tagsinput.js"></script>
+    <script src="{{url('assets')}}/examples/js/forms/advanced.js"></script>
+    <script src="{{url('global')}}/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+    <script src="{{url('global')}}/js/Plugin/jquery-placeholder.js"></script>
+    <script src="{{url('global')}}/js/Plugin/material.js"></script>
 @endif
 
 <script>
