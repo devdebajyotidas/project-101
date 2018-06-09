@@ -10,7 +10,8 @@
         "laravel/framework": "5.6.*",
         "laravel/tinker": "^1.0",
         "owen-it/laravel-auditing": "^6.0",
-        "qafeen/aadhaar": "@dev"
+        "qafeen/aadhaar": "@dev",
+        "robincsamuel/laravel-msg91": "dev-master"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

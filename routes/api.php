@@ -24,6 +24,8 @@ Route::group(['namespace' => 'API'], function () {
     Route::get('ping', 'TestController@ping');
     Route::post('postapi', 'TestController@post_test');
     Route::get('aadhaar', 'TestController@testaadhaar');
+    Route::get('sendotp', 'TestController@sendOtp');
+    Route::get('sendmessage', 'TestController@sendMessage');
 
     /*Authentication*/
     Route::post('accounts/login', 'UserController@checkOtp');

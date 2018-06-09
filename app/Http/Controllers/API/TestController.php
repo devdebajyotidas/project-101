@@ -8,6 +8,8 @@ use Illuminate\Http\Response;
 use Qafeen\Aadhaar\Aadhaar;
 
 require_once public_path().'/aadhaar/xmlseclibs/xmlseclibs.php';
+
+use RobinCSamuel\LaravelMsg91\LaravelMsg91;
 use RobRichards\XMLSecLibs\XMLSecurityDSig;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
 
@@ -170,4 +172,15 @@ class TestController extends Controller
 //        return base64_encode($encrypted_session_key);
 //    }
 
+     function sendMessage(){
+         $sms_provider=new LaravelMsg91();
+         $result=$sms_provider->message(917003082730, 'This is a test message',['route'=>4]);
+         return response()->json($result);
+     }
+
+     function sendOtp(){
+         $sms_provider=new LaravelMsg91();
+         $result=$sms_provider->sendOtp(917003082730,1290);
+         return response()->json($result);
+     }
 }
